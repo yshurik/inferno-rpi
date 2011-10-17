@@ -3,7 +3,7 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
-/* @(#) $Id: adler32.c,v 1.2 2002/11/06 22:32:54 davidT Exp $ */
+/* @(#) $Id$ */
 
 #include "zlib.h"
 
@@ -18,10 +18,10 @@
 #define DO16(buf)   DO8(buf,0); DO8(buf,8);
 
 /* ========================================================================= */
-ZEXTERNDEF uLong ZEXPORT adler32(adler, buf, len)
-    uLong adler;
-    const Bytef *buf;
-    uInt len;
+ZEXPORT(uLong) adler32( /* adler, buf, len) */
+    uLong adler,
+    const Bytef *buf,
+    uInt len )
 {
     unsigned long s1 = adler & 0xffff;
     unsigned long s2 = (adler >> 16) & 0xffff;
@@ -34,12 +34,12 @@ ZEXTERNDEF uLong ZEXPORT adler32(adler, buf, len)
         len -= k;
         while (k >= 16) {
             DO16(buf);
-	    buf += 16;
+            buf += 16;
             k -= 16;
         }
         if (k != 0) do {
             s1 += *buf++;
-	    s2 += s1;
+            s2 += s1;
         } while (--k);
         s1 %= BASE;
         s2 %= BASE;
