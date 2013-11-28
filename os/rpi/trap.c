@@ -42,3 +42,9 @@ isvalid_va(void *v)
 	return (ulong)v >= KZERO && (ulong)v < conf.topofmem;
 }
 
+void
+trap(Ureg *ureg)
+{
+	splhi();
+}
+

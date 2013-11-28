@@ -18,6 +18,7 @@ OBJ=\
 	pl011.$O\
 	dump.$O\
 	trap.$O\
+	intr.$O\
 	main.$O\
 	$IP\
 	$DEVS\
