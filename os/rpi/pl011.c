@@ -1,9 +1,6 @@
 
-
-typedef unsigned int    u32int;
-#define IOBASE          0x20000000      /* base of io registers */
-#define PL011REGS       (IOBASE+0x201000)
-#define UART_PL01x_FR_TXFF  0x20
+#include "u.h"
+#include "io.h"
 
 void
 pl011_putc(int c)

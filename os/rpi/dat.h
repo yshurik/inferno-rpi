@@ -68,6 +68,13 @@ struct Mach
 	ulong   ticks;      /* of the clock since boot time */
 	Proc*   proc;       /* current process on this processor */
 	Label   sched;      /* scheduler wakeup */
+
+	/* stacks for exceptions */
+	ulong   fiqstack[4];
+	ulong   irqstack[4];
+	ulong   abtstack[4];
+	ulong   undstack[4];
+	int		stack[1];
 };
 
 extern Mach *m;

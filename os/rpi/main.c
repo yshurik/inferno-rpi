@@ -74,7 +74,6 @@ main() {
 	poolsizeinit();
 
 	pl011_puts("to inifinite loop\n\n");
-
 	for (;;);
 }
 
@@ -83,7 +82,6 @@ void	idlehands(void) { return; }
 void 	kprocchild(Proc *p, void (*func)(void*), void *arg) { return; }
 
 void	setpanic(void) { return; }
-void	dumpstack(void) { return; }
 void	exit(int) { return; }
 void	reboot(void) { return; }
 void	halt(void) { return; }
