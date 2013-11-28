@@ -2,6 +2,17 @@
 #include "mem.h"
 #include "armv6.h"
 
+TEXT setr13(SB), $-4
+	MOVW	4(FP), R1
+	MOVW	CPSR, R2
+	BIC		$PsrMask, R2, R3
+	ORR		R0, R3
+	MOVW	R3, CPSR		/* switch to new mode */
+	MOVW	SP, R0			/* return old sp */
+	MOVW	R1, SP			/* install new one */
+	MOVW	R2, CPSR		/* switch back to old mode */
+	RET
+
 TEXT vectors(SB), $-4
 	MOVW    0x18(PC), PC	/* reset */
 	MOVW    0x18(PC), PC	/* undefined */

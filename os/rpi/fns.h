@@ -16,7 +16,15 @@ void	pl011_puts(char *);
 void	pl011_serputs(char *, int);
 void	pl011_addr(void *a, int nl);
 
+ulong	getsp(void);
+ulong	getcpuid(void);
+
+void	trapinit(void);
 char *	trapname(int psr);
 int		isvalid_va(void *v);
 int		isvalid_wa(void *v);
-
+void	setr13(int, void*);
+void	vectors(void);
+void	vtable(void);
+void	dumpregs(Ureg*);
+int		(*breakhandler)(Ureg*, Proc*);
