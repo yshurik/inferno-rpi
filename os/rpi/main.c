@@ -49,14 +49,6 @@ Proc *up = 0;
 PhysUart* physuart[1];
 
 int		waserror(void) { return 0; }
-int		splhi(void) { return 0; }
-void	splx(int) { return; }
-int		spllo(void) { return 0; } 
-void	splxpc(int) { return; }
-int		islo(void) { return 0; }
-int		setlabel(Label*) { return 0; }
-void	gotolabel(Label*) { return; }
-ulong	getcallerpc(void*) { return 0; }
 int		segflush(void*, ulong) { return 0; }
 void	idlehands(void) { return; }
 void 	kprocchild(Proc *p, void (*func)(void*), void *arg) { return; }

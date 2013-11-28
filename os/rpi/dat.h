@@ -25,7 +25,8 @@ struct Lock
 
 struct Label
 {
-	int x;
+	ulong   sp;
+	ulong   pc;
 };
 
 enum
@@ -60,6 +61,7 @@ struct Conf
 
 struct Mach
 {
+	ulong   splpc;      /* pc of last caller to splhi */
 	int     machno;     /* physical id of processor */
 	ulong   ticks;      /* of the clock since boot time */
 	Proc*   proc;       /* current process on this processor */
