@@ -7,6 +7,7 @@
 #define BY2V        8                       /*! only used in xalloc.c */
 #define MACHADDR    (KZERO+0x2000)          /*! Mach structure */
 #define ROUND(s,sz) (((s)+(sz-1))&~(sz-1))
+#define PGROUND(s)	ROUND(s, BY2PG)
 
 #define KSTKSIZE    (8*KiB)
 #define KSTACK      KSTKSIZE
