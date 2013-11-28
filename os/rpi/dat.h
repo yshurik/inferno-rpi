@@ -38,7 +38,10 @@ enum
 
 struct FPenv
 {
-	int x;
+	ulong	status;
+	ulong   control;
+	ushort  fpistate;   /* emulated fp */
+	ulong   regs[8][3]; /* emulated fp */
 };
 
 struct  FPU

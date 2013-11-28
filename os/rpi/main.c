@@ -77,19 +77,91 @@ main() {
 	printinit();
 
 	print("\nARM %ld MHz id %8.8lux\n", (m->cpuhz+500000)/1000000, getcpuid());
-	print("Inferno OS %s Vita Nuova\n", VERSION);
+	print("Inferno OS %s Vita Nuova\n\n", VERSION);
+
+	procinit();
+	links();
+	chandevreset();
+
+	eve = strdup("inferno");
+
+	userinit();
+	schedinit();
 
 	pl011_puts("to inifinite loop\n\n");
 	for (;;);
 }
 
+void
+init0(void)
+{
+	Osenv *o;
+	char buf[2*KNAMELEN];
+
+	up->nerrlab = 0;
+
+	print("Starting init0()\n");
+	spllo();
+
+	if(waserror())
+		panic("init0 %r");
+
+	/* These are o.k. because rootinit is null.
+	 * Then early kproc's will have a root and dot. */
+
+	o = up->env;
+	o->pgrp->slash = namec("#/", Atodir, 0, 0);
+	cnameclose(o->pgrp->slash->name);
+	o->pgrp->slash->name = newcname("/");
+	o->pgrp->dot = cclone(o->pgrp->slash);
+
+	chandevinit();
+
+	if(!waserror()){
+		ksetenv("cputype", "arm", 0);
+		snprint(buf, sizeof(buf), "arm %s", conffile);
+		ksetenv("terminal", buf, 0);
+		poperror();
+	}
+
+	poperror();
+
+	disinit("/osinit.dis");
+}
+
+void
+userinit(void)
+{
+	Proc *p;
+	Osenv *o;
+
+	p = newproc();
+	o = p->env;
+
+	o->fgrp = newfgrp(nil);
+	o->pgrp = newpgrp();
+	o->egrp = newegrp();
+	kstrdup(&o->user, eve);
+
+	strcpy(p->text, "interp");
+
+	p->fpstate = FPINIT;
+
+	/*	Kernel Stack
+		N.B. The -12 for the stack pointer is important.
+		4 bytes for gotolabel's return PC */
+	p->sched.pc = (ulong)init0;
+	p->sched.sp = (ulong)p->kstack+KSTACK-8;
+
+	ready(p);
+}
+
 void	segflush(void*, ulong) { return; }
 void	idlehands(void) { return; }
-void 	kprocchild(Proc *p, void (*func)(void*), void *arg) { return; }
 
 void	exit(int) { return; }
 void	reboot(void) { return; }
-void	halt(void) { return; }
+void	halt(void) { spllo(); for(;;); }
 
 Timer*	addclock0link(void (*)(void), int) { return 0; }
 void	clockcheck(void) { return; }

@@ -30,17 +30,8 @@ trapname(int psr)
 	return s;
 }
 
-int
-isvalid_wa(void *v)
-{
-	return (ulong)v < conf.topofmem && !((ulong)v & 3);
-}
-
-int
-isvalid_va(void *v)
-{
-	return (ulong)v < conf.topofmem;
-}
+int isvalid_wa(void *v) { return (ulong)v < conf.topofmem && !((ulong)v & 3); }
+int isvalid_va(void *v) { return (ulong)v < conf.topofmem; }
 
 enum { Nvec = 8 }; /* # of vectors */
 typedef struct Vpage0 {
