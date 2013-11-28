@@ -58,7 +58,7 @@ code
 	int panicreset = 0;
 
 init
-	bootinit
+	rpiinit
 
 root
 	/chan	/
@@ -70,3 +70,4 @@ root
 	/prog	/
 	/dis/lib
 	/dis/disk
+	/osinit.dis
