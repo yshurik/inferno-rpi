@@ -118,4 +118,5 @@
 
 #define BARRIERS ISB; DSB
 
+#define LVECTORS	0x00000000
 #define HVECTORS	0xffff0000

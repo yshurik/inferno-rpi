@@ -22,6 +22,26 @@ TEXT getsp(SB), $-4
 	MOVW    SP, R0
 	RET
 
+TEXT getpc(SB), $-4
+	MOVW    R14, R0
+	RET
+
+TEXT getsc(SB), $-4
+	MRC     CpSC, 0, R0, C(CpCONTROL), C(0), CpMainctl
+	RET
+
+TEXT getcpsr(SB), $-4
+	MOVW	CPSR, R0
+	RET
+
+TEXT getspsr(SB), $-4
+	MOVW	SPSR, R0
+	RET
+
+TEXT coherence(SB), $-4
+	BARRIERS
+	RET
+
 TEXT splhi(SB), $-4
 	MOVW	$(MACHADDR), R6
 	MOVW	R14, (R6)   /* m->splpc */
@@ -59,5 +79,9 @@ TEXT _tas(SB), $-4
 
 TEXT getcpuid(SB), $-4
 	MRC		CpSC, 0, R0, C(CpID), C(0)
+	RET
+
+TEXT lcycles(SB), $-4
+	MRC CpSC, 0, R0, C(CpSPM), C(CpSPMperf), CpSPMcyc
 	RET
 

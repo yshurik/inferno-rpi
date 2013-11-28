@@ -34,6 +34,9 @@ confinit(void)
 	conf.nproc = 100 + ((conf.npage*BY2PG)/MB)*5;
 	conf.nmach = 1;
 
+	active.machs = 1;
+	active.exiting = 0;
+
 	print("Conf: top=%lud, npage0=%lud, ialloc=%lud, nproc=%lud\n",
 			conf.topofmem, conf.npage0,
 			conf.ialloc, conf.nproc);
@@ -51,10 +54,19 @@ poolsizeinit(void)
 
 void
 main() {
+	uint i=0; ulong pc;
+	pc = getpc();
+	pl011_addr((void *)pc, 1);
 	pl011_puts("Entered main() at ");
 	pl011_addr(&main, 0);
 	pl011_puts(" with SP=");
-	pl011_addr((void *)getsp(), 1.);
+	pl011_addr((void *)getsp(), 0);
+	pl011_puts(" with SC=");
+	pl011_addr((void *)getsc(), 0);
+	pl011_puts(" with CPSR=");
+	pl011_addr((void *)getcpsr(), 0);
+	pl011_puts(" with SPSR=");
+	pl011_addr((void *)getspsr(), 1);
 
 	pl011_puts("Clearing Mach:  ");
 	memset(m, 0, sizeof(Mach));
@@ -74,10 +86,13 @@ main() {
 	poolinit();
 	poolsizeinit();
 	trapinit();
+	timersinit();
+	clockinit();
 	printinit();
 
 	print("\nARM %ld MHz id %8.8lux\n", (m->cpuhz+500000)/1000000, getcpuid());
-	print("Inferno OS %s Vita Nuova\n\n", VERSION);
+	print("Inferno OS %s Vita Nuova\n", VERSION);
+	print("Ported to Raspberry Pi (BCM2835) by LynxLine\n\n");
 
 	procinit();
 	links();
@@ -162,9 +177,6 @@ void	idlehands(void) { return; }
 void	exit(int) { return; }
 void	reboot(void) { return; }
 void	halt(void) { spllo(); for(;;); }
-
-Timer*	addclock0link(void (*)(void), int) { return 0; }
-void	clockcheck(void) { return; }
 
 void	fpinit(void) {}
 void	FPsave(void*) {}

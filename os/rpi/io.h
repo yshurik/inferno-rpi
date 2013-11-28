@@ -25,16 +25,20 @@ enum {
 	IRQtimer2	= 2,
 	IRQtimer3	= 3,
 	IRQclock	= IRQtimer3,
+	IRQusb		= 9,
 	IRQdma0		= 16,
 #define IRQDMA(chan)	(IRQdma0+(chan))
 	IRQaux		= 29,
 	IRQmmc		= 62,
 	IRQbasic	= 64,
 	IRQtimerArm	= IRQbasic + 0,
+	IRQfiq		= IRQusb,	/* only one source can be FIQ */
 	DmaD2M		= 0,		/* device to memory */
 	DmaM2D		= 1,		/* memory to device */
 	DmaM2M		= 2,		/* memory to memory */
 	DmaChanEmmc	= 4,		/* can only use 2-5, 11-12 */
 	DmaDevEmmc	= 11
 };
+
+
 
