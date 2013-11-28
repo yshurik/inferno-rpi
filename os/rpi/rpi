@@ -1,0 +1,59 @@
+dev
+	root
+	cons
+	env
+	mnt
+	pipe
+	prog
+	srv
+	dup
+
+lib
+	interp
+	math
+	kern
+	sec
+
+mod
+	math
+	sys
+
+port
+	alarm
+	alloc
+	allocb
+	chan
+	dev
+	dial
+	dis
+	discall
+	exception
+	exportfs
+	inferno
+	latin1
+	nocache
+	nodynld
+	parse
+	pgrp
+	print
+	proc
+	qio
+	qlock
+	random
+	sysfile
+	taslock
+	xalloc
+
+init
+	bootinit
+
+root
+	/chan	/
+	/dev	/
+	/dis	/
+	/env	/
+	/fd		/
+	/net	/
+	/prog	/
+	/dis/lib
+	/dis/disk
