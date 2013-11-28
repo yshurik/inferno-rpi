@@ -15,3 +15,8 @@ void	pl011_putc(int);
 void	pl011_puts(char *);
 void	pl011_serputs(char *, int);
 void	pl011_addr(void *a, int nl);
+
+char *	trapname(int psr);
+int		isvalid_va(void *v);
+int		isvalid_wa(void *v);
+

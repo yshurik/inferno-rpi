@@ -16,6 +16,8 @@ OBJ=\
 	load.$O\
 	armv6.$O\
 	pl011.$O\
+	dump.$O\
+	trap.$O\
 	main.$O\
 	$IP\
 	$DEVS\
