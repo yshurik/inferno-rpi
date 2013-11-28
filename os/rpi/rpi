@@ -50,7 +50,12 @@ code
 	int main_pool_pcnt = 40;
 	int heap_pool_pcnt = 20;
 	int image_pool_pcnt = 40;
+	int cflag = 0;
+
 	int consoleprint = 1;
+	int redirectconsole = 1;
+	char debug_keys = 1;
+	int panicreset = 0;
 
 init
 	bootinit

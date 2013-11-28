@@ -48,28 +48,39 @@ poolsizeinit(void)
 	poolsize(imagmem, (nb*image_pool_pcnt)/100, 1);
 }
 
-void 
+void
 main() {
-	memset(edata, 0, end-edata);
+	pl011_puts("Entered main() at ");
+	pl011_addr(&main, 0);
+	pl011_puts(" with SP=");
+	pl011_addr((void *)getsp(), 1.);
+
+	pl011_puts("Clearing Mach:  ");
 	memset(m, 0, sizeof(Mach));
+	pl011_addr((char *)m,		0); pl011_puts("-");
+	pl011_addr((char *)(m+1),	1);
+
+	pl011_puts("Clearing edata: ");
+	memset(edata, 0, end-edata);
+	pl011_addr((char *)&edata,	0); pl011_puts("-");
+	pl011_addr((char *)&end,	1);
+
 	conf.nmach = 1;
 	serwrite = &pl011_serputs;
+
 	confinit();
 	xinit();
 	poolinit();
 	poolsizeinit();
+
+	pl011_puts("to inifinite loop\n\n");
+
 	for (;;);
 }
 
-int		waserror(void) { return 0; }
-int		segflush(void*, ulong) { return 0; }
+void	segflush(void*, ulong) { return; }
 void	idlehands(void) { return; }
 void 	kprocchild(Proc *p, void (*func)(void*), void *arg) { return; }
-ulong	_tas(ulong*) { return 0; }
-ulong	_div(ulong*) { return 0; }
-ulong	_divu(ulong*) { return 0; }
-ulong	_mod(ulong*) { return 0; }
-ulong	_modu(ulong*) { return 0; }
 
 void	setpanic(void) { return; }
 void	dumpstack(void) { return; }

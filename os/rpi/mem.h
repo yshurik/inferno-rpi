@@ -9,6 +9,8 @@
 #define ROUND(s,sz) (((s)+(sz-1))&~(sz-1))
 #define PGROUND(s)	ROUND(s, BY2PG)
 
+#define	MAXMACH		1
+
 #define KSTKSIZE    (8*KiB)
 #define KSTACK      KSTKSIZE
 
