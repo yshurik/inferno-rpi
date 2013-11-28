@@ -12,6 +12,7 @@ typedef struct Ureg Ureg;
 typedef struct Label Label;
 typedef struct FPenv FPenv;
 typedef struct Mach Mach;
+typedef struct MMMU	MMMU;
 typedef struct FPU FPU;
 typedef ulong  Instr;
 typedef struct Conf Conf;
@@ -62,6 +63,18 @@ struct Conf
 	ulong   base1;      /* base of bank 1 */
 	ulong   ialloc;     /* max interrupt time allocation in bytes */
 	ulong   topofmem;   /* top addr of memory */
+	int     monitor;    /* flag */
+};
+
+/*
+ *  MMU stuff in Mach.
+ */
+struct MMMU
+{
+	PTE*	mmul1;		/* l1 for this processor */
+	//int	mmul1lo;
+	//int	mmul1hi;
+	//int	mmupid;
 };
 
 #include "../port/portdat.h"
@@ -75,6 +88,7 @@ struct Mach
 	Label   sched;      /* scheduler wakeup */
 	uvlong	fastclock;	/* last sampled value */
 	ulong	cpuhz;
+	MMMU;
 
 	/* stacks for exceptions */
 	ulong   fiqstack[5];

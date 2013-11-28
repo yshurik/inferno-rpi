@@ -85,3 +85,81 @@ TEXT lcycles(SB), $-4
 	MRC CpSC, 0, R0, C(CpSPM), C(CpSPMperf), CpSPMcyc
 	RET
 
+/*
+ * drain write buffer
+ * writeback and invalidate data cache
+ */
+TEXT cachedwbinv(SB), 1, $-4
+	DSB
+	MOVW	$0, R0
+	MCR	CpSC, 0, R0, C(CpCACHE), C(CpCACHEwbi), CpCACHEall
+	RET
+
+/*
+ * cachedwbinvse(va, n)
+ *   drain write buffer
+ *   writeback and invalidate data cache range [va, va+n)
+ */
+TEXT cachedwbinvse(SB), 1, $-4
+	MOVW	R0, R1		/* DSB clears R0 */
+	DSB
+	MOVW	n+4(FP), R2
+	ADD	R1, R2
+	SUB	$1, R2
+	BIC	$(CACHELINESZ-1), R1
+	BIC	$(CACHELINESZ-1), R2
+	MCRR(CpSC, 0, 2, 1, CpCACHERANGEdwbi)
+	RET
+
+/*
+ * cachedwbse(va, n)
+ *   drain write buffer
+ *   writeback data cache range [va, va+n)
+ */
+TEXT cachedwbse(SB), 1, $-4
+	MOVW	R0, R1		/* DSB clears R0 */
+	DSB
+	MOVW	n+4(FP), R2
+	ADD	R1, R2
+	BIC	$(CACHELINESZ-1), R1
+	BIC	$(CACHELINESZ-1), R2
+	MCRR(CpSC, 0, 2, 1, CpCACHERANGEdwb)
+	RET
+
+/*
+ * drain write buffer and prefetch buffer
+ * writeback and invalidate data cache
+ * invalidate instruction cache
+ */
+TEXT cacheuwbinv(SB), 1, $-4
+	BARRIERS
+	MOVW	$0, R0
+	MCR	CpSC, 0, R0, C(CpCACHE), C(CpCACHEwbi), CpCACHEall
+	MCR	CpSC, 0, R0, C(CpCACHE), C(CpCACHEinvi), CpCACHEall
+	RET
+
+/*
+ * invalidate instruction cache
+ */
+TEXT cacheiinv(SB), 1, $-4
+	MOVW	$0, R0
+	MCR	CpSC, 0, R0, C(CpCACHE), C(CpCACHEinvi), CpCACHEall
+	RET
+
+/*
+ * invalidate tlb
+ */
+TEXT mmuinvalidate(SB), 1, $-4
+	MOVW	$0, R0
+	MCR	CpSC, 0, R0, C(CpTLB), C(CpTLBinvu), CpTLBinv
+	BARRIERS
+	RET
+
+/*
+ * mmuinvalidateaddr(va)
+ *   invalidate tlb entry for virtual page address va, ASID 0
+ */
+TEXT mmuinvalidateaddr(SB), 1, $-4
+   	MCR	CpSC, 0, R0, C(CpTLB), C(CpTLBinvu), CpTLBinvse
+	BARRIERS
+	RET

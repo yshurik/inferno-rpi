@@ -8,16 +8,23 @@ dev
 	srv
 	dup
 	uart
+	draw screen
 
 lib
 	interp
+	tk
+	draw
+	memlayer
+	memdraw
+	sec
 	math
 	kern
-	sec
 
 mod
 	math
 	sys
+	draw
+	tk
 
 port
 	alarm
