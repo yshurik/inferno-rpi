@@ -87,6 +87,14 @@
 #define CpSPMperf   12          /* various counters */
 
 /*
+ * CpCACHERANGE opcode2 fields for MCRR instruction (armv6)
+ */
+#define	CpCACHERANGEinvi	5		/* invalidate instruction  */
+#define	CpCACHERANGEinvd	6		/* invalidate data */
+#define CpCACHERANGEdwb		12		/* writeback */
+#define CpCACHERANGEdwbi	14		/* writeback+invalidate */
+
+/*
  * CpCONTROL op2 codes, op1==0, Crm==0.
  */
 #define CpMainctl   0
@@ -173,6 +181,9 @@
 	MCR	CpSC, 0, R0, C(CpCACHE), C(CpCACHEwb), CpCACHEwait
 
 #define BARRIERS ISB; DSB
+
+#define MCRR(coproc, op, rd, rn, crm) \
+		WORD $(0xec400000|(rn)<<16|(rd)<<12|(coproc)<<8|(op)<<4|(crm))
 
 #define LVECTORS	0x00000000
 #define HVECTORS	0xffff0000

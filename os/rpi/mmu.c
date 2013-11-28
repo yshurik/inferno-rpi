@@ -45,3 +45,37 @@ mmuinit(void)
 	l1[L1X(va)] = (uintptr)l2|Dom0|Coarse;
 	l2[L2X(va)] = PHYSDRAM|L2AP(Krw)|Small;
 }
+
+void
+mmuinit1(void)
+{
+	PTE *l1;
+
+	l1 = (PTE*)L1;
+	m->mmul1 = l1;
+}
+
+uintptr
+mmukmap(uintptr va, uintptr pa, uint size)
+{
+	int o;
+	uint n;
+	PTE *pte, *pte0;
+
+	assert((va & (MiB-1)) == 0);
+	o = pa & (MiB-1);
+	pa -= o;
+	size += o;
+	pte = pte0 = &m->mmul1[L1X(va)];
+	for(n = 0; n < size; n += MiB)
+		if(*pte++ != Fault)
+			return 0;
+	pte = pte0;
+	for(n = 0; n < size; n += MiB){
+		*pte++ = (pa+n)|Dom0|L1AP(Krw)|Section;
+		mmuinvalidateaddr(va+n);
+	}
+	cachedwbse(pte0, pte - pte0);
+	return va + o;
+}
+

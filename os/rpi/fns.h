@@ -1,6 +1,7 @@
 
 #define KADDR(p)    ((void *)p)
 #define PADDR(p)    ((ulong)p)
+#define DMAADDR(va)	(BUSDRAM |((uintptr)(va)))
 #define waserror()  (up->nerrlab++, setlabel(&up->errlab[up->nerrlab-1]))
 #define procsave(p)		/* Save the mach part of the current */
 						/* process state, no need for one cpu */
@@ -22,6 +23,7 @@ ulong	getcpuid(void);
 ulong	getcallerpc(void*);
 u32int	lcycles(void);
 
+void	idlehands(void);
 void	coherence(void);
 void	clockinit(void);
 void	trapinit(void);
@@ -35,3 +37,11 @@ void	dumpregs(Ureg*);
 void	dumparound(uint addr);
 int		(*breakhandler)(Ureg*, Proc*);
 void	irqenable(int, void (*)(Ureg*, void*), void*);
+
+void cachedwbinv(void);
+void cachedwbse(void*, int);
+void cachedwbinvse(void*, int);
+void cacheiinv(void);
+void cacheuwbinv(void);
+
+void*   fbinit(int, int*, int*, int*);

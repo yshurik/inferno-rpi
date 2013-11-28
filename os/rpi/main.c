@@ -82,9 +82,11 @@ main() {
 	serwrite = &pl011_serputs;
 
 	confinit();
+	mmuinit1();
 	xinit();
 	poolinit();
 	poolsizeinit();
+	screeninit();
 	trapinit();
 	timersinit();
 	clockinit();

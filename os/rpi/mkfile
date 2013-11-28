@@ -23,6 +23,7 @@ OBJ=\
 	intr.$O\
 	main.$O\
 	mmu.$O\
+	vcore.$O\
 	$IP\
 	$DEVS\
 	$ETHERS\

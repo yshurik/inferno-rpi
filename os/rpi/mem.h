@@ -4,9 +4,11 @@
 
 #define KZERO       0                       /*! kernel address space */
 #define BY2PG       (4*KiB)                 /*! bytes per page */
+#define BI2BY       8                       /*! bits per byte */
 #define BY2V        8                       /*! only used in xalloc.c */
 #define MACHADDR    (KZERO+0x2000)          /*! Mach structure */
 #define	L2			(KZERO+0x3000)			/* L2 ptes for vectors etc */
+#define	VCBUFFER	(KZERO+0x3400)			/* videocore mailbox buffer */
 #define	L1			(KZERO+0x4000)			/* tt ptes: 16KiB aligned */
 #define	KTZERO		(KZERO+0x8000)			/* kernel text start */
 #define ROUND(s,sz) (((s)+(sz-1))&~(sz-1))
@@ -14,10 +16,13 @@
 
 #define	MAXMACH		1
 
+#define CACHELINESZ	32
+
 #define KSTKSIZE    (8*KiB)
 #define KSTACK      KSTKSIZE
 
 #define	PHYSDRAM	0
+#define BUSDRAM		0x40000000
 #define	DRAMSIZE	(256*MiB)
 
 #define	PHYSIO		0x20000000
