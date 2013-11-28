@@ -13,8 +13,9 @@ typedef struct Label Label;
 typedef struct FPenv FPenv;
 typedef struct Mach Mach;
 typedef struct FPU FPU;
-typedef ulong Instr;
+typedef ulong  Instr;
 typedef struct Conf Conf;
+typedef u32int PTE;
 
 struct Lock
 {
