@@ -69,6 +69,17 @@
 #define CpCACHEflushbtse 7          /* ⋯ or just one entry in it (cortex) */
 
 /*
+ * CpTLB Secondary (CRm) registers and opcode2 fields.
+ */
+#define CpTLBinvi	5			/* instruction */
+#define CpTLBinvd	6			/* data */
+#define CpTLBinvu	7			/* unified */
+
+#define CpTLBinv	0			/* invalidate all */
+#define CpTLBinvse	1			/* invalidate single entry */
+#define CpTBLasid	2			/* by ASID (cortex) */
+
+/*
  * CpSPM Secondary (CRm) registers and opcode2 fields.
  */
 #define CpSPMctl    0           /* performance monitor control */
@@ -106,7 +117,52 @@
 #define CpCtre      (1<<28)     /* TRE: TEX remap enable */
 #define CpCafe      (1<<29)     /* AFE: access flag (ttb) enable */
 
-//#define PADDR(va)	(PHYSDRAM | ((va) & ~KSEGM))
+//#define PADDR(va)	(PHYSDRAM | ((va) & ~KTZERO))
+
+/*
+ * MMU page table entries.
+ * Mbz (0x10) bit is implementation-defined and must be 0 on the cortex.
+ */
+#define Mbz			(0<<4)
+#define Fault		0x00000000		/* L[12] pte: unmapped */
+
+#define Coarse		(Mbz|1)			/* L1 */
+#define Section		(Mbz|2)			/* L1 1MB */
+#define Fine		(Mbz|3)			/* L1 */
+
+#define Large		0x00000001		/* L2 64KB */
+#define Small		0x00000002		/* L2 4KB */
+#define Tiny		0x00000003		/* L2 1KB: not in v7 */
+#define Buffered	0x00000004		/* L[12]: write-back not -thru */
+#define Cached		0x00000008		/* L[12] */
+#define Dom0		0
+
+#define Noaccess	0			/* AP, DAC */
+#define Krw			1			/* AP */
+/* armv7 deprecates AP[2] == 1 & AP[1:0] == 2 (Uro), prefers 3 (new in v7) */
+#define Uro			2			/* AP */
+#define Urw			3			/* AP */
+#define Client		1			/* DAC */
+#define Manager		3			/* DAC */
+
+#define F(v, o, w)	(((v) & ((1<<(w))-1))<<(o))
+#define AP(n, v)	F((v), ((n)*2)+4, 2)
+#define L1AP(ap)	(AP(3, (ap)))
+#define L2AP(ap) (AP(3, (ap))|AP(2, (ap))|AP(1, (ap))|AP(0, (ap))) /* pre-armv7 */
+#define DAC(n, v)	F((v), (n)*2, 2)
+
+/*
+ * For multi-bit fields use FIELD(v, o, w) where 'v' is the value
+ * of the bit-field of width 'w' with LSb at bit offset 'o'.
+ */
+#define FIELD(v, o, w)	(((v) & ((1<<(w))-1))<<(o))
+
+#define FCLR(d, o, w)	((d) & ~(((1<<(w))-1)<<(o)))
+#define FEXT(d, o, w)	(((d)>>(o)) & ((1<<(w))-1))
+#define FINS(d, o, w, v) (FCLR((d), (o), (w))|FIELD((v), (o), (w)))
+#define FSET(d, o, w)	((d)|(((1<<(w))-1)<<(o)))
+
+#define FMASK(o, w)	(((1<<(w))-1)<<(o))
 
 #define ISB \
 	MOVW	$0, R0; \

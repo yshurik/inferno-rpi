@@ -22,6 +22,7 @@ OBJ=\
 	trap.$O\
 	intr.$O\
 	main.$O\
+	mmu.$O\
 	$IP\
 	$DEVS\
 	$ETHERS\
@@ -41,13 +42,13 @@ HFILES=\
 	io.h\
 
 CFLAGS=-wFV -I./include -I$ROOT/include -I$ROOT/libinterp
-#KERNDATE=`{$NDATE}
-KERNDATE=1374055859
+KERNDATE=`{$NDATE}
+#KERNDATE=1374055859
 
 default:V: i$CONF
 
 i$CONF: $OBJ $CONF.c $CONF.root.h $LIBNAMES
-	#$CC $CFLAGS -DKERNDATE=$KERNDATE $CONF.c
+	$CC $CFLAGS -DKERNDATE=$KERNDATE $CONF.c
 	$LD -l -o $target -R4 -T$loadaddr $OBJ $CONF.$O $LIBFILES
 	echo Complete
 

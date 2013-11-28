@@ -6,6 +6,9 @@
 #define BY2PG       (4*KiB)                 /*! bytes per page */
 #define BY2V        8                       /*! only used in xalloc.c */
 #define MACHADDR    (KZERO+0x2000)          /*! Mach structure */
+#define	L2			(KZERO+0x3000)			/* L2 ptes for vectors etc */
+#define	L1			(KZERO+0x4000)			/* tt ptes: 16KiB aligned */
+#define	KTZERO		(KZERO+0x8000)			/* kernel text start */
 #define ROUND(s,sz) (((s)+(sz-1))&~(sz-1))
 #define PGROUND(s)	ROUND(s, BY2PG)
 
@@ -14,3 +17,10 @@
 #define KSTKSIZE    (8*KiB)
 #define KSTACK      KSTKSIZE
 
+#define	PHYSDRAM	0
+#define	DRAMSIZE	(256*MiB)
+
+#define	PHYSIO		0x20000000
+#define VIRTIO		0x20000000
+#define	IOSIZE		(16*MiB)
+#define	FRAMEBUFFER	0xA0000000
