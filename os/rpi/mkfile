@@ -15,6 +15,7 @@ INSTALLDIR=$ROOT/Inferno/$OBJTYPE/bin
 OBJ=\
 	load.$O\
 	armv6.$O\
+	pl011.$O\
 	main.$O\
 	$IP\
 	$DEVS\

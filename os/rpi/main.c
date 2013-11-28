@@ -1,52 +1,65 @@
-typedef unsigned int    u32int;
-#define IOBASE          0x20000000      /* base of io registers */
-#define PL011REGS       (IOBASE+0x201000)
-#define UART_PL01x_FR_TXFF  0x20
-
-void
-pl011_putc(int c)
-{
-	u32int *ap;
-	ap = (u32int*)PL011REGS;
-	/* Wait until there is space in the FIFO */
-	while (ap[0x18>>2] & UART_PL01x_FR_TXFF)
-		;
-
-	/* Send the character */
-	ap[0] = c;
-
-	/* Wait until there is space in the FIFO */
-	while (ap[0x18>>2] & UART_PL01x_FR_TXFF)
-		;
-}
-
-void
-pl011_puts(char *s) {
-	while(*s != 0) {
-		if (*s == '\n')
-			pl011_putc('\r');
-		pl011_putc(*s++);
-	}
-}
-
-void 
-main() {
-	char * s = "Hello world!\n";
-	pl011_puts(s);
-	for (;;);
-}
 
 #include "u.h"
 #include "../port/lib.h"
 #include "dat.h"
 #include "mem.h"
+#include "fns.h"
+
+#include "../port/uart.h"
+PhysUart* physuart[1];
 
 Conf conf;
 Mach *m = (Mach*)MACHADDR;
 Proc *up = 0;
 
-#include "../port/uart.h"
-PhysUart* physuart[1];
+extern int main_pool_pcnt;
+extern int heap_pool_pcnt;
+extern int image_pool_pcnt;
+
+void
+confinit(void)
+{
+	ulong base;
+	conf.topofmem = 128*MB;
+
+	base = PGROUND((ulong)end);
+	conf.base0 = base;
+
+	conf.npage1 = 0;
+	conf.npage0 = (conf.topofmem - base)/BY2PG;
+	conf.npage = conf.npage0 + conf.npage1;
+	conf.ialloc = (((conf.npage*(main_pool_pcnt))/100)/2)*BY2PG;
+
+	conf.nproc = 100 + ((conf.npage*BY2PG)/MB)*5;
+	conf.nmach = 1;
+
+	print("Conf: top=%lud, npage0=%lud, ialloc=%lud, nproc=%lud\n",
+			conf.topofmem, conf.npage0,
+			conf.ialloc, conf.nproc);
+}
+
+static void
+poolsizeinit(void)
+{
+	ulong nb;
+	nb = conf.npage*BY2PG;
+	poolsize(mainmem, (nb*main_pool_pcnt)/100, 0);
+	poolsize(heapmem, (nb*heap_pool_pcnt)/100, 0);
+	poolsize(imagmem, (nb*image_pool_pcnt)/100, 1);
+}
+
+void 
+main() {
+	memset(edata, 0, end-edata);
+	memset(m, 0, sizeof(Mach));
+	conf.nmach = 1;
+	serwrite = &pl011_serputs;
+	confinit();
+	xinit();
+	poolinit();
+	poolsizeinit();
+	for (;;);
+}
 
 int		waserror(void) { return 0; }
 int		segflush(void*, ulong) { return 0; }
