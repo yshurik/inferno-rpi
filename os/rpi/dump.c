@@ -42,7 +42,7 @@ _dumpstack(Ureg *ureg)
 		iprint("invalid ureg/stack: %.8p\n", l);
 		return;
 	}
-	print("ktrace /kernel/path %.8ux %.8ux %.8ux\n", ureg->pc, ureg->sp, ureg->r14);
+	print("ktrace/kernel/path %.8ux %.8ux %.8ux\n", ureg->pc, ureg->sp, ureg->r14);
 	if(up != nil && l >= (ulong*)up->kstack && l <= (ulong*)(up->kstack+KSTACK-4))
 		estack = (ulong*)(up->kstack+KSTACK);
 	else if(l >= (ulong*)m->stack && l <= (ulong*)((ulong)m+BY2PG-4))
@@ -106,7 +106,7 @@ dumparound(uint addr)
 	/* +-32 bytes to print */
 	print("%8.8uX:\n", addr0 +(-2)*16);
 	for (a_col = 0; a_col<16; ++a_col) {
-		print(" %.2uX", a_col);
+		print("|%.2uX", a_col);
 	}
 	print("\n");
 

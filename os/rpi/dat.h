@@ -3,6 +3,7 @@
 #define MS2HZ       (1000/HZ)   /*! millisec per clock tick */
 #define TK2SEC(t)   ((t)/HZ)    /*! ticks to seconds */
 #define MS2TK(t)    ((t)/MS2HZ) /*! milliseconds to ticks */
+enum { Mhz = 1000 * 1000 };
 
 #define MACHP(n)    (n == 0 ? (Mach*)(MACHADDR) : (Mach*)0)
 
@@ -71,16 +72,25 @@ struct Mach
 	ulong   ticks;      /* of the clock since boot time */
 	Proc*   proc;       /* current process on this processor */
 	Label   sched;      /* scheduler wakeup */
+	uvlong	fastclock;	/* last sampled value */
 	ulong	cpuhz;
 
 	/* stacks for exceptions */
-	ulong   fiqstack[4];
-	ulong   irqstack[4];
-	ulong   abtstack[4];
-	ulong   undstack[4];
+	ulong   fiqstack[5];
+	ulong   irqstack[5];
+	ulong   abtstack[5];
+	ulong   undstack[5];
+	ulong	sysstack[5];
 	int		stack[1];
 };
 
 extern Mach *m;
 extern Proc *up;
+
+struct
+{
+	Lock;
+	int machs;          /* bitmap of active CPUs */
+	int exiting;        /* shutdown */
+} active;
 

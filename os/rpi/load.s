@@ -10,9 +10,8 @@ TEXT _start(SB), 1, $-4
 
 	MOVW    $1, R1
 	MCR     CpSC, 0, R1, C(CpSPM), C(CpSPMperf), CpSPMctl /* counter */
-
 	MRC     CpSC, 0, R0, C(CpCONTROL), C(0), CpMainctl
-	ORR     $(CpChv|CpCdcache|CpCicache), R0
+	ORR     $(CpCdcache|CpCicache), R0
 	MCR     CpSC, 0, R0, C(CpCONTROL), C(0), CpMainctl
 	ISB
 
