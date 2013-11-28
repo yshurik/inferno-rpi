@@ -4,6 +4,7 @@
 #include "dat.h"
 #include "mem.h"
 #include "fns.h"
+#include "version.h"
 
 #include "../port/uart.h"
 PhysUart* physuart[1];
@@ -72,6 +73,11 @@ main() {
 	xinit();
 	poolinit();
 	poolsizeinit();
+	trapinit();
+	printinit();
+
+	print("\nARM %ld MHz id %8.8lux\n", (m->cpuhz+500000)/1000000, getcpuid());
+	print("Inferno OS %s Vita Nuova\n", VERSION);
 
 	pl011_puts("to inifinite loop\n\n");
 	for (;;);
@@ -81,7 +87,6 @@ void	segflush(void*, ulong) { return; }
 void	idlehands(void) { return; }
 void 	kprocchild(Proc *p, void (*func)(void*), void *arg) { return; }
 
-void	setpanic(void) { return; }
 void	exit(int) { return; }
 void	reboot(void) { return; }
 void	halt(void) { return; }

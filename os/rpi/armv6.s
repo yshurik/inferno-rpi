@@ -57,3 +57,7 @@ TEXT _tas(SB), $-4
 	SWPW    R2, (R1), R0
 	RET
 
+TEXT getcpuid(SB), $-4
+	MRC		CpSC, 0, R0, C(CpID), C(0)
+	RET
+
