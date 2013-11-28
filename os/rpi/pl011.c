@@ -40,3 +40,21 @@ pl011_serputs(char *s, int n) {
 	}
 }
 
+void
+pl011_addr(void *a, int nl)
+{
+	int i;
+	unsigned char *ca = (unsigned char *)&a;
+	unsigned char h,l;
+
+	for (i=3;i>=0;--i) {
+		h = ca[i]/16;
+		l = ca[i]%16;
+		pl011_putc(h<10 ? h+0x30 : h-10+0x41);
+		pl011_putc(l<10 ? l+0x30 : l-10+0x41);
+	}
+	if (nl) {
+		pl011_putc(13);
+		pl011_putc(10);
+	}
+}

@@ -18,6 +18,10 @@ TEXT getcallerpc(SB), $-4
 	MOVW    0(SP), R0
 	RET
 
+TEXT getsp(SB), $-4
+	MOVW    SP, R0
+	RET
+
 TEXT splhi(SB), $-4
 	MOVW	$(MACHADDR), R6
 	MOVW	R14, (R6)   /* m->splpc */
@@ -45,5 +49,11 @@ TEXT islo(SB), $-4
 	MOVW	CPSR, R0
 	AND		$(PsrDirq), R0
 	EOR		$(PsrDirq), R0
+	RET
+
+TEXT _tas(SB), $-4
+	MOVW    R0, R1
+	MOVW    $0xDEADDEAD, R2
+	SWPW    R2, (R1), R0
 	RET
 
