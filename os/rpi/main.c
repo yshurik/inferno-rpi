@@ -54,7 +54,7 @@ poolsizeinit(void)
 
 void
 main() {
-	uint i=0; ulong pc;
+	ulong pc;
 	pc = getpc();
 	pl011_addr((void *)pc, 1);
 	pl011_puts("Entered main() at ");
@@ -91,6 +91,7 @@ main() {
 	timersinit();
 	clockinit();
 	printinit();
+	pl011init();
 
 	print("\nARM %ld MHz id %8.8lux\n", (m->cpuhz+500000)/1000000, getcpuid());
 	print("Inferno OS %s Vita Nuova\n", VERSION);

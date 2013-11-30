@@ -36,7 +36,11 @@ enum
 {
 	FPINIT,
 	FPACTIVE,
-	FPINACTIVE
+	FPINACTIVE,
+	FPEMU,
+
+	/* bits or'd with the state */
+	FPILLEGAL= 0x100,
 };
 
 struct FPenv
@@ -47,7 +51,7 @@ struct FPenv
 	ulong   regs[8][3]; /* emulated fp */
 };
 
-struct  FPU
+struct FPU
 {
 	FPenv env;
 };
