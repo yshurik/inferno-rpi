@@ -4,6 +4,7 @@
 #define POWERREGS		(IOBASE+0x100000)
 #define PL011REGS		(IOBASE+0x201000)
 
+#define UART_PL01x_FR_RXFE  0x10
 #define UART_PL01x_FR_TXFF	0x20
 
 typedef struct Intregs Intregs;
@@ -37,7 +38,28 @@ enum {
 	DmaM2D		= 1,		/* memory to device */
 	DmaM2M		= 2,		/* memory to memory */
 	DmaChanEmmc	= 4,		/* can only use 2-5, 11-12 */
-	DmaDevEmmc	= 11
+	DmaDevEmmc	= 11,
+
+	PowerSd		= 0,
+	PowerUart0,
+	PowerUart1,
+	PowerUsb,
+	PowerI2c0,
+	PowerI2c1,
+	PowerI2c2,
+	PowerSpi,
+	PowerCcp2tx,
+
+	ClkEmmc		= 1,
+	ClkUart,
+	ClkArm,
+	ClkCore,
+	ClkV3d,
+	ClkH264,
+	ClkIsp,
+	ClkSdram,
+	ClkPixel,
+	ClkPwm,
 };
 
 

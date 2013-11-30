@@ -23,3 +23,6 @@ kprocchild(Proc *p, void (*func)(void*), void *arg)
 	p->arg = arg;
 }
 
+void		
+validaddr(void*, ulong, int) {}
+

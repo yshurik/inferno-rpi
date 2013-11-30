@@ -212,7 +212,6 @@ trap(Ureg *ureg)
 		break;
 
 	case PsrMund:
-		panic("Undefined instruction");
 		if(*(ulong*)ureg->pc == BREAK && breakhandler) {
 			int s;
 			Proc *p;
@@ -240,10 +239,10 @@ trap(Ureg *ureg)
 			dumpregs(ureg);
 			panic("%s", up->env->errstr);
 		}
-//		if(!fpiarm(ureg)) {
-//			dumpregs(ureg);
-//			sys_trap_error(ureg->type);
-//		}
+		if(!fpiarm(ureg)) {
+			dumpregs(ureg);
+			sys_trap_error(ureg->type);
+		}
 		poperror();
 		break;
 
