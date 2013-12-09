@@ -9,6 +9,10 @@ dev
 	dup
 	uart
 	draw screen
+	usb
+
+link
+	usbdwc
 
 lib
 	interp
@@ -84,6 +88,7 @@ root
 	/osinit.dis
 	/dis/sh.dis	/dis/tiny/sh.dis
 	/dis/ls.dis
+	/dis/ps.dis
 	/dis/cat.dis
 	/dis/bind.dis
 	/dis/mount.dis
@@ -91,10 +96,15 @@ root
 	/dis/echo.dis
 	/dis/cd.dis
 	/dis/lib/arg.dis
+	/dis/lib/lock.dis
 	/dis/lib/bufio.dis
 	/dis/lib/string.dis
 	/dis/lib/filepat.dis
 	/dis/lib/readdir.dis
 	/dis/lib/workdir.dis
 	/dis/lib/daytime.dis
-
+# usb support 
+	/dis/lib/usb/usb.dis      
+	/dis/lib/usb/usbmass.dis  
+	/dis/lib/usb/usbmct.dis   
+	/dis/lib/usb/usbmouse.dis

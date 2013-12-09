@@ -5,8 +5,8 @@
 TEXT setr13(SB), $-4
 	MOVW	4(FP), R1
 	MOVW	CPSR, R2
-	BIC		$PsrMask, R2, R3
-	ORR		R0, R3
+	BIC	$PsrMask, R2, R3
+	ORR	R0, R3
 	MOVW	R3, CPSR		/* switch to new mode */
 	MOVW	SP, R0			/* return old sp */
 	MOVW	R1, SP			/* install new one */
@@ -35,31 +35,31 @@ TEXT vtable(SB), $-4
 
 TEXT _vsvc(SB), 1, $-4				/* SWI */
 	MOVW.W		R14, -4(R13)		/* ureg->pc = interrupted PC */
-	MOVW		SPSR, R14			/* ureg->psr = SPSR */
+	MOVW		SPSR, R14		/* ureg->psr = SPSR */
 	MOVW.W		R14, -4(R13)		/* ... */
 	MOVW		$PsrMsvc, R14		/* ureg->type = PsrMsvc */
 	MOVW.W		R14, -4(R13)		/* ... */
 
 	MOVM.DB.S	[R0-R14], (R13)		/* save user level registers */
-	SUB			$(15*4), R13		/* r13 now points to ureg */
+	SUB		$(15*4), R13		/* r13 now points to ureg */
 
 	MOVW		$setR12(SB), R12	/* kernel SB loaded */
 
 	MOVW		$(MACHADDR), R10	/* m */
-	//MOVW		8(R10), R9			/* up */
+	//MOVW		8(R10), R9		/* up */
 
-	MOVW		R13, R0				/* first arg is pointer to ureg */
-	SUB	$8,		R13					/* space for argument+link */
+	MOVW		R13, R0			/* first arg is pointer to ureg */
+	SUB		$8, R13			/* space for argument+link */
 
 	//BL		syscall(SB)
 
-	ADD			$(8+4*15), R13		/* make r13 point to ureg->type */
-	MOVW		8(R13), R14			/* restore link */
-	MOVW		4(R13), R0			/* restore SPSR */
-	MOVW		R0, SPSR			/* ... */
+	ADD		$(8+4*15), R13		/* make r13 point to ureg->type */
+	MOVW		8(R13), R14		/* restore link */
+	MOVW		4(R13), R0		/* restore SPSR */
+	MOVW		R0, SPSR		/* ... */
 	MOVM.DB.S	(R13), [R0-R14]		/* restore registers */
-	ADD			$8, R13				/* pop past ureg->{type+psr} */
-	RFE								/* MOVM.IA.S.W (R13), [R15] */
+	ADD			$8, R13		/* pop past ureg->{type+psr} */
+	RFE					/* MOVM.IA.S.W (R13), [R15] */
 
 TEXT _vund(SB), $-4
 	MOVM.IA	[R0-R4], (SP)
@@ -95,8 +95,8 @@ _vswitch:
 	 * (r13 [sp] and r14 [link]) to those of svc mode.
 	 */
 	MOVW	CPSR, R14
-	BIC		$PsrMask, R14
-	ORR		$(PsrDirq|PsrMsvc), R14
+	BIC	$PsrMask, R14
+	ORR	$(PsrDirq|PsrMsvc), R14
 	MOVW	R14, CPSR			/* switch! */
 
 	/* here for trap from SVC mode */
@@ -111,45 +111,45 @@ _vswitch:
 	 */
 	/* save kernel level registers, at end r13 points to ureg */
 	MOVM.DB	[R0-R14], (R13)
-	SUB		$(15*4), R13		/* SP now points to saved R0 */
+	SUB	$(15*4), R13		/* SP now points to saved R0 */
 
 	MOVW	$setR12(SB), R12	/* Make sure we've got the kernel's SB loaded */
 
-	MOVW	R13, R0				/* first arg is pointer to ureg */
-	SUB		$(4*2), R13			/* space for argument+link (for debugger) */
+	MOVW	R13, R0			/* first arg is pointer to ureg */
+	SUB	$(4*2), R13		/* space for argument+link (for debugger) */
 	MOVW	$0xdeaddead, R11	/* marker */
 
-	BL		trap(SB)
+	BL	trap(SB)
 
-	ADD		$(4*2+4*15), R13	/* make r13 point to ureg->type */
-	MOVW	8(R13), R14			/* restore link */
-	MOVW	4(R13), R0			/* restore SPSR */
-	MOVW	R0, SPSR			/* ... */
+	ADD	$(4*2+4*15), R13	/* make r13 point to ureg->type */
+	MOVW	8(R13), R14		/* restore link */
+	MOVW	4(R13), R0		/* restore SPSR */
+	MOVW	R0, SPSR		/* ... */
 
 	MOVM.DB (R13), [R0-R14]		/* restore registers */
 
-	ADD		$(4*2), R13			/* pop past ureg->{type+psr} to pc */
-	RFE							/* MOVM.IA.S.W (R13), [R15] */
+	ADD	$(4*2), R13			/* pop past ureg->{type+psr} to pc */
+	RFE					/* MOVM.IA.S.W (R13), [R15] */
 
 TEXT _vfiq(SB), 1, $-4				/* FIQ */
 	MOVW		$PsrMfiq, R8		/* trap type */
-	MOVW		SPSR, R9			/* interrupted psr */
-	MOVW		R14, R10			/* interrupted pc */
+	MOVW		SPSR, R9		/* interrupted psr */
+	MOVW		R14, R10		/* interrupted pc */
 	MOVM.DB.W	[R8-R10], (R13)		/* save in ureg */
 	MOVM.DB.W.S	[R0-R14], (R13)		/* save interrupted regs */
 	MOVW		$setR12(SB), R12	/* Make sure we've got the kernel's SB loaded */
 	MOVW		$(MACHADDR), R10	/* m */
-	MOVW		8(R10), R9			/* up */
-	MOVW		R13, R0				/* first arg is pointer to ureg */
-	SUB			$(4*2), R13			/* space for argument+link (for debugger) */
+	MOVW		8(R10), R9		/* up */
+	MOVW		R13, R0			/* first arg is pointer to ureg */
+	SUB		$(4*2), R13		/* space for argument+link (for debugger) */
 
-	//BL			fiq(SB)
+	BL		fiq(SB)
 
-	ADD			$(8+4*15), R13	/* make r13 point to ureg->type */
+	ADD		$(8+4*15), R13	/* make r13 point to ureg->type */
 	MOVW		8(R13), R14		/* restore link */
 	MOVW		4(R13), R0		/* restore SPSR */
 	MOVW		R0, SPSR		/* ... */
 	MOVM.DB.S	(R13), [R0-R14]	/* restore registers */
-	ADD			$8, R13			/* pop past ureg->{type+psr} */
-	RFE							/* MOVM.IA.S.W (R13), [R15] */
+	ADD		$8, R13			/* pop past ureg->{type+psr} */
+	RFE					/* MOVM.IA.S.W (R13), [R15] */
 

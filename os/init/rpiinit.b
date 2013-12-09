@@ -21,6 +21,7 @@ init(nil: ref Draw->Context, nil: list of string)
 	sys = load Sys Sys->PATH;
 	sys->print("init: starting shell\n");
 
+	sys->bind("#p", "/prog", sys->MREPL);
 	sys->bind("#i", "/dev", sys->MREPL);    # draw device
 	sys->bind("#c", "/dev", sys->MAFTER);   # console device
 	sys->bind("#u", "/dev", sys->MAFTER);   # usb subsystem

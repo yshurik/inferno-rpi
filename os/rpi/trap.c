@@ -70,7 +70,6 @@ void
 trapinit(void)
 {
 	Vpage0 *vpage0;
-	Vpage0 *vpage1;
 
 	intrsoff();
 
@@ -79,15 +78,29 @@ trapinit(void)
 	memmove(vpage0->vectors, vectors, sizeof(vpage0->vectors));
 	memmove(vpage0->vtable,  vtable,  sizeof(vpage0->vtable));
 
-	vpage1 = (Vpage0*)LVECTORS;
-	memmove(vpage1->vectors, vectors, sizeof(vpage1->vectors));
-	memmove(vpage1->vtable,  vtable,  sizeof(vpage1->vtable));
-
-	setr13(PsrMfiq, m->fiqstack+nelem(m->fiqstack));
+	setr13(PsrMfiq, (u32int*)(FIQSTKTOP));
 	setr13(PsrMirq, m->irqstack+nelem(m->irqstack));
 	setr13(PsrMabt, m->abtstack+nelem(m->abtstack));
 	setr13(PsrMund, m->undstack+nelem(m->undstack));
 	setr13(PsrMsys, m->undstack+nelem(m->sysstack));
+	coherence();
+}
+
+/*
+ * called direct from intr.s to handle fiq interrupt.
+ */
+void
+fiq(Ureg *ureg)
+{
+	Vctl *v;
+
+	v = vfiq;
+	if(v == nil)
+		panic("unexpected item in bagging area");
+	m->intr++;
+	ureg->pc -= 4;
+	coherence();
+	v->f(ureg, v->a);
 	coherence();
 }
 
@@ -204,11 +217,12 @@ trap(Ureg *ureg)
 
 	switch(itype) {
 	case PsrMirq:
-		t = m->ticks;	/* CPU time per proc */
+		t = m->ticks;		/* CPU time per proc */
 		up = nil;		/* no process at interrupt level */
 		irq(ureg);
 		up = m->proc;
 		preemption(m->ticks - t);
+		m->intr++;
 		break;
 
 	case PsrMund:
