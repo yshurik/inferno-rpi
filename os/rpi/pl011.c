@@ -25,7 +25,7 @@ pl011_putc(int c)
 		;
 }
 
-int 
+int
 pl011_getc(void)
 {
 	int c;
@@ -73,7 +73,7 @@ pl011init(void)
 {
 	if(kbdq == nil)
 		kbdq = qopen(4*1024, 0, 0, 0);
-				    
+
 	/*
 	 * at 115200 baud, the 1024 char buffer takes 56 ms to process,
 	 * processing it every 22 ms should be fine
@@ -85,7 +85,6 @@ static void
 pl011_clock(void)
 {
 	char c;
-	int i;
 	if (pl011_tstc()) {
 		c = pl011_getc();
 		if (c == 13) {

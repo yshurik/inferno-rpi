@@ -7,6 +7,7 @@ enum { Mhz = 1000 * 1000 };
 
 #define MACHP(n)    (n == 0 ? (Mach*)(MACHADDR) : (Mach*)0)
 
+typedef struct ISAConf ISAConf;
 typedef struct Lock Lock;
 typedef struct Ureg Ureg;
 typedef struct Label Label;
@@ -76,20 +77,18 @@ struct Conf
 struct MMMU
 {
 	PTE*	mmul1;		/* l1 for this processor */
-	//int	mmul1lo;
-	//int	mmul1hi;
-	//int	mmupid;
 };
 
 #include "../port/portdat.h"
 
 struct Mach
 {
-	ulong   splpc;      /* pc of last caller to splhi */
-	int     machno;     /* physical id of processor */
-	ulong   ticks;      /* of the clock since boot time */
-	Proc*   proc;       /* current process on this processor */
-	Label   sched;      /* scheduler wakeup */
+	ulong   splpc;		/* pc of last caller to splhi */
+	int     machno;		/* physical id of processor */
+	Proc*   proc;		/* current process on this processor */
+	ulong   ticks;		/* of the clock since boot time */
+	Label   sched;		/* scheduler wakeup */
+	int	intr;
 	uvlong	fastclock;	/* last sampled value */
 	ulong	cpuhz;
 	MMMU;
@@ -100,7 +99,7 @@ struct Mach
 	ulong   abtstack[5];
 	ulong   undstack[5];
 	ulong	sysstack[5];
-	int		stack[1];
+	int	stack[1];
 };
 
 extern Mach *m;
@@ -112,4 +111,19 @@ struct
 	int machs;          /* bitmap of active CPUs */
 	int exiting;        /* shutdown */
 } active;
+
+#define NISAOPT     8
+
+struct ISAConf {
+	char    *type;
+	ulong   port;
+	int irq;
+	ulong   dma;
+	ulong   mem;
+	ulong   size;
+	ulong   freq;
+
+	int nopt;
+	char    *opt[NISAOPT];
+};
 

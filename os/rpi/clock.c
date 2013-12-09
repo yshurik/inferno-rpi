@@ -123,3 +123,47 @@ timerset(uvlong next)
 		next = now + MaxPeriod;
 	tn->c3 = (ulong)next;
 }
+
+ulong
+µs(void)
+{
+	if(SystimerFreq != 1*Mhz)
+		return fastticks2us(fastticks(nil));
+	return fastticks(nil);
+}
+
+void
+microdelay(int n)
+{
+	Systimers *tn;
+	u32int now, diff;
+
+	tn = (Systimers*)SYSTIMERS;
+	diff = n + 1;
+	now = tn->clo;
+	while(tn->clo - now < diff)
+		;
+}
+
+void
+delay(int n)
+{
+	while(--n >= 0)
+		microdelay(1000);
+}
+
+void
+armtimerset(int n)
+{
+	Armtimer *tm;
+
+	tm = (Armtimer*)ARMTIMER;
+	if(n > 0){
+		tm->ctl |= TmrEnable|TmrIntEnable;
+		tm->load = n;
+	}else{
+		tm->load = 0;
+		tm->ctl &= ~(TmrEnable|TmrIntEnable);
+		tm->irq = 1;
+	}
+}

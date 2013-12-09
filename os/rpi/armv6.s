@@ -65,6 +65,14 @@ TEXT splxpc(SB), $-4
 	MOVW	R1, CPSR
 	RET
 
+TEXT splfhi(SB), 1, $-4
+	MOVW	$(MACHADDR), R2		/* save caller pc in Mach */
+	MOVW	R14, 0(R2)
+	MOVW	CPSR, R0			/* turn off irqs and fiqs */
+	ORR	$(PsrDirq|PsrDfiq), R0, R1
+	MOVW	R1, CPSR
+	RET
+
 TEXT islo(SB), $-4
 	MOVW	CPSR, R0
 	AND		$(PsrDirq), R0
