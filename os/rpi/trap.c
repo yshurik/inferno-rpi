@@ -77,6 +77,7 @@ trapinit(void)
 	vpage0 = (Vpage0*)HVECTORS;
 	memmove(vpage0->vectors, vectors, sizeof(vpage0->vectors));
 	memmove(vpage0->vtable,  vtable,  sizeof(vpage0->vtable));
+	cacheuwbinv();
 
 	setr13(PsrMfiq, (u32int*)(FIQSTKTOP));
 	setr13(PsrMirq, m->irqstack+nelem(m->irqstack));

@@ -18,6 +18,7 @@
 #define	MAXMACH		1
 
 #define CACHELINESZ	32
+#define BLOCKALIGN	32
 
 #define KSTKSIZE	(8*KiB)
 #define KSTACK		KSTKSIZE
