@@ -104,6 +104,7 @@ root
 	/dis/lib/workdir.dis
 	/dis/lib/daytime.dis
 # usb support 
+	/dis/usb/usbd.dis /os/rpi/usb/usbd.dis
 	/dis/lib/usb/usb.dis      
 	/dis/lib/usb/usbmass.dis  
 	/dis/lib/usb/usbmct.dis   
