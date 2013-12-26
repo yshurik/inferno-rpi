@@ -4,7 +4,7 @@ vendor 0x0711
 class 3
 	subclass 1
 		proto 1
-			load /dis/lib/usb/usbkbd.dis
+			load /dis/lib/usb/usbkb.dis
 		proto 2
 			load /dis/lib/usb/usbmouse.dis
 

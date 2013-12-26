@@ -10,6 +10,7 @@ dev
 	uart
 	draw screen
 	usb
+	kbin kbd
 
 link
 	usbdwc
@@ -78,9 +79,10 @@ init
 root
 	/chan	/
 	/dev	/
-	/dis	
+	/dis
+	/lib	/
 	/env	/
-	/fd		/
+	/fd	/
 	/net	/
 	/prog	/
 	/dis/lib
@@ -103,9 +105,8 @@ root
 	/dis/lib/readdir.dis
 	/dis/lib/workdir.dis
 	/dis/lib/daytime.dis
-# usb support 
-	/dis/usb/usbd.dis /os/rpi/usb/usbd.dis
-	/dis/lib/usb/usb.dis      
-	/dis/lib/usb/usbmass.dis  
-	/dis/lib/usb/usbmct.dis   
-	/dis/lib/usb/usbmouse.dis
+# usb support
+	/lib/usbdb
+	/dis/usb/usbd.dis
+	/dis/lib/usb/usb.dis
+	/dis/lib/usb/usbkbd.dis
