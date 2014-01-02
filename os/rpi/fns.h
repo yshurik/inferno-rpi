@@ -2,6 +2,7 @@
 #define KADDR(p)	((void *)p)
 #define PADDR(p)	((ulong)p)
 #define DMAADDR(va)	(BUSDRAM |((uintptr)(va)))
+#define DMAIO(va)	(BUSIO | ((uintptr)(va)))
 #define waserror()	(up->nerrlab++, setlabel(&up->errlab[up->nerrlab-1]))
 #define procsave(p)	/* Save the mach part of the current */
 			/* process state, no need for one cpu */
@@ -29,6 +30,7 @@ ulong	getcpuid(void);
 ulong	getcallerpc(void*);
 u32int	lcycles(void);
 int	splfhi(void);
+int	tas(void *);
 
 void	idlehands(void);
 void	coherence(void);
@@ -63,4 +65,6 @@ void	clockcheck(void);
 void	armtimerset(int);
 void	links(void);
 int	fpiarm(Ureg*);
+
+char*	getconf(char*);
 

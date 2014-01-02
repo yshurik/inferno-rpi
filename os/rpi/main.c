@@ -17,6 +17,9 @@ extern int main_pool_pcnt;
 extern int heap_pool_pcnt;
 extern int image_pool_pcnt;
 
+char* getconf(char*) { return nil; }
+void okay(int /*on*/) {}
+
 void
 confinit(void)
 {

@@ -11,6 +11,7 @@ dev
 	draw screen
 	usb
 	kbin kbd
+	sd
 
 link
 	usbdwc
@@ -21,7 +22,9 @@ lib
 	draw
 	memlayer
 	memdraw
+	keyring
 	sec
+	mp
 	math
 	kern
 
@@ -30,6 +33,7 @@ mod
 	sys
 	draw
 	tk
+	keyring
 
 port
 	alarm
@@ -61,6 +65,10 @@ port
 	tod
 	xalloc
 
+misc
+	sdmmc	emmc
+	dma
+
 code
 	int kernel_pool_pcnt = 10;
 	int main_pool_pcnt = 40;
@@ -85,19 +93,23 @@ root
 	/fd	/
 	/net	/
 	/prog	/
+	/n	/
+	/n/local	/
 	/dis/lib
 	/dis/disk
 	/osinit.dis
-	/dis/sh.dis	/dis/tiny/sh.dis
+	/dis/sh.dis
 	/dis/ls.dis
 	/dis/ps.dis
 	/dis/cat.dis
 	/dis/bind.dis
 	/dis/mount.dis
+	/dis/unmount.dis
 	/dis/pwd.dis
 	/dis/echo.dis
 	/dis/cd.dis
 	/dis/lib/arg.dis
+	/dis/lib/auth.dis
 	/dis/lib/lock.dis
 	/dis/lib/bufio.dis
 	/dis/lib/string.dis
@@ -109,4 +121,30 @@ root
 	/lib/usbdb
 	/dis/usb/usbd.dis
 	/dis/lib/usb/usb.dis
-	/dis/lib/usb/usbkbd.dis
+	/dis/lib/usb/usbkb.dis
+# disk support
+	/usr	/
+	/usr/inferno	/
+	/usr/inferno/keyring	/
+	/usr/inferno/keyring/default
+	/dis/dd.dis
+	/dis/fs.dis
+	/dis/lib/fslib.dis
+	/dis/lib/fsproto.dis
+	/dis/lib/fsfilter.dis
+	/dis/zeros.dis
+	/dis/disk
+	/dis/disk/calc.tab.dis
+	/dis/disk/fdisk.dis
+	/dis/disk/format.dis
+	/dis/disk/ftl.dis
+	/dis/disk/kfs.dis
+	/dis/disk/kfscmd.dis
+	/dis/disk/mbr.dis
+	/dis/disk/mkext.dis
+	/dis/disk/mkfs.dis
+	/dis/disk/pedit.dis
+	/dis/disk/prep.dis
+	/dis/lib/disks.dis
+	/dis/lib/styx.dis
+

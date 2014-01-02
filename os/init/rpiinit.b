@@ -27,6 +27,15 @@ init(nil: ref Draw->Context, nil: list of string)
 	sys->bind("#i", "/dev", sys->MREPL);    # draw device
 	sys->bind("#c", "/dev", sys->MAFTER);   # console device
 	sys->bind("#u", "/dev", sys->MAFTER);   # usb subsystem
+	sys->bind("#S", "/dev", sys->MAFTER);   # sdcard subsystem
+
+	#sdd := sys->open("/dev/sdM0/data", Sys->OREAD);
+	#sdc := sys->open("/dev/sdM0/ctl", Sys->OWRITE);
+	#buf := array[512] of byte;
+	#n := sys->read(sdd, buf, len buf);
+	#sys->write(sdc, buf, n);
+	#sys->print("fdisk:\n%s\n",string buf);
+	#sdd = sdc = nil;
 
 	usbd->init(nil,nil);
 	spawn shell->init(nil, nil);

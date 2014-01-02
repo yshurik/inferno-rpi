@@ -29,5 +29,6 @@
 
 #define	PHYSIO		0x20000000
 #define VIRTIO		0x20000000
+#define	BUSIO		0x7E000000
 #define	IOSIZE		(16*MiB)
 #define	FRAMEBUFFER	0xA0000000
