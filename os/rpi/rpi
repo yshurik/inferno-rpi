@@ -12,9 +12,22 @@ dev
 	usb
 	kbin kbd
 	sd
+	ip  ip ipv6 ipaux iproute arp netlog ptclbsum iprouter plan9 nullmedium pktmedium netaux
+	ether netif netaux
 
 link
 	usbdwc
+	etherusb
+	ethermedium
+	loopbackmedium
+
+ip
+	il
+	tcp
+	udp
+	ipifc
+	icmp
+	icmp6
 
 lib
 	interp
@@ -34,6 +47,8 @@ mod
 	draw
 	tk
 	keyring
+	crypt
+	ipints
 
 port
 	alarm
