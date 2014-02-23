@@ -3,6 +3,7 @@
 TARG=\
 	usb.dis\
 	usbkb.dis\
+	ethersmsc.dis\
 
 MODULES=
 

@@ -55,8 +55,12 @@ poolsizeinit(void)
 	poolsize(imagmem, (nb*image_pool_pcnt)/100, 1);
 }
 
+uint
+getfirmware(void);
+
 void
 main() {
+	uint rev;
 	ulong pc;
 	pc = getpc();
 	pl011_addr((void *)pc, 1);
@@ -96,7 +100,8 @@ main() {
 	printinit();
 	pl011init();
 
-	print("\nARM %ld MHz id %8.8lux\n", (m->cpuhz+500000)/1000000, getcpuid());
+	rev = getfirmware();
+	print("\nARM %ld MHz id %8.8lux firmware: rev %d\n", (m->cpuhz+500000)/1000000, getcpuid(), rev);
 	print("Inferno OS %s Vita Nuova\n", VERSION);
 	print("Ported to Raspberry Pi (BCM2835) by LynxLine\n\n");
 
@@ -142,6 +147,8 @@ init0(void)
 		ksetenv("cputype", "arm", 0);
 		snprint(buf, sizeof(buf), "arm %s", conffile);
 		ksetenv("terminal", buf, 0);
+		snprint(buf, sizeof(buf), "%s", getethermac());
+		ksetenv("ethermac", buf, 0);
 		poperror();
 	}
 
