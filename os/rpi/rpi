@@ -126,7 +126,10 @@ root
 	/dis/lib/arg.dis
 	/dis/lib/auth.dis
 	/dis/lib/lock.dis
+	/dis/lib/rand.dis
+	/dis/lib/dial.dis
 	/dis/lib/bufio.dis
+	/dis/lib/timers.dis
 	/dis/lib/string.dis
 	/dis/lib/filepat.dis
 	/dis/lib/readdir.dis
@@ -137,6 +140,12 @@ root
 	/dis/usb/usbd.dis
 	/dis/lib/usb/usb.dis
 	/dis/lib/usb/usbkb.dis
+	/dis/lib/usb/ethersmsc.dis
+# ethernet, dhcp
+	/dis/ip/ping.dis
+	/dis/ip/dhcp.dis
+	/dis/lib/ip.dis
+	/dis/lib/dhcpclient.dis
 # disk support
 	/usr	/
 	/usr/inferno	/

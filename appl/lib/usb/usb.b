@@ -336,7 +336,7 @@ parseiface(d: ref Usbdev, c: ref Conf, b: array of byte, n: int): (int, ref Ifac
 	return (Difacelen, ip, ip.altc[altid]);
 }
 
-parseendpt(d: ref Usbdev, c: ref Conf, ip: ref Iface, altc: ref Altc, b: array of byte, n: int): (int, ref Ep) {
+parseendpt(d: ref Usbdev, nil: ref Conf, ip: ref Iface, altc: ref Altc, b: array of byte, n: int): (int, ref Ep) {
 	i, dir, epid: int;
 	ep: ref Ep;
 	epp: ref Ep;
@@ -586,116 +586,6 @@ getmaxpkt(d: ref Dev, islow: int): int { #c!
 	return int buf[7];
 }
 
-# old ones:
-
-Proto: adt {
-	proto: int;
-	name: string;
-};
-
-SubClass: adt {
-	subclass: int;
-	name: string;
-	proto: array of Proto;
-};
-
-Class: adt {
-	class: int;
-	name: string;
-	subclass: array of SubClass;
-};
-
-classes := array [] of {
-	Class(Usb->Claudio, "audio",
-		array [] of {
-			SubClass(1, "control", nil),
-			SubClass(2, "stream", nil),
-			SubClass(3, "midi", nil),
-		}
-	),
-	Class(Usb->Clcomms, "comms",
-		array [] of {
-			SubClass(1, "abstract",
-				array [] of {
-					Proto(1, "AT"),
-				}
-			)
-		}
-	),
-	Class(Usb->Clhid, "hid",
-		array [] of {
-			SubClass(1, "boot",
-				array [] of {
-					Proto(1, "kbd"),
-					Proto(2, "mouse"),
-				}
-			)
-		}
-	),
-	Class(Usb->Clprinter, "printer",
-		array [] of {
-			SubClass(1, "printer",
-				array [] of {
-					Proto(1, "uni"),
-					Proto(2, "bi"),
-				}
-			)
-		}
-	),
-	Class(Usb->Clhub, "hub",
-		array [] of {
-			SubClass(1, "hub", nil),
-		}
-	),
-	Class(Usb->Cldata, "data", nil),
-	Class(Usb->Clstorage, "mass",
-		array [] of {
-			SubClass(1, "rbc",
-				array [] of {
-					Proto(0, "cbi-cc"),
-					Proto(1, "cbi-nocc"),
-					Proto(16r50, "bulkonly"),
-				}
-			),
-			SubClass(2, "sff-8020i/mmc-2",
-				array [] of {
-					Proto(0, "cbi-cc"),
-					Proto(1, "cbi-nocc"),
-					Proto(16r50, "bulkonly"),
-				}
-			),
-			SubClass(3, "qic-157",
-				array [] of {
-					Proto(0, "cbi-cc"),
-					Proto(1, "cbi-nocc"),
-					Proto(16r50, "bulkonly"),
-				}
-			),
-			SubClass(4, "ufi",
-				array [] of {
-					Proto(0, "cbi-cc"),
-					Proto(1, "cbi-nocc"),
-					Proto(16r50, "bulkonly"),
-				}
-			),
-			SubClass(5, "sff-8070i",
-				array [] of {
-					Proto(0, "cbi-cc"),
-					Proto(1, "cbi-nocc"),
-					Proto(16r50, "bulkonly"),
-				}
-			),
-			SubClass(6, "scsi",
-				array [] of {
-					Proto(0, "cbi-cc"),
-					Proto(1, "cbi-nocc"),
-					Proto(16r50, "bulkonly"),
-				}
-			),
-		}
-	),
-};
-
 get2(b: array of byte): int
 {
 	return int b[0] | (int b[1] << 8);
@@ -763,30 +653,10 @@ memset(buf: array of byte, v: int)
 		buf[x] = byte v;
 }
 
-sclass(class, subclass, proto: int): string
-{
-	for (c := 0; c < len classes; c++)
-		if (classes[c].class == class)
-			break;
-	if (c >= len classes)
-		return sys->sprint("%d.%d.%d", class, subclass, proto);
-	if (classes[c].subclass == nil)
-		return sys->sprint("%s.%d.%d", classes[c].name, subclass, proto);
-	for (sc := 0; sc < len classes[c].subclass; sc++)
-		if (classes[c].subclass[sc].subclass == subclass)
-			break;
-	if (sc >= len classes[c].subclass)
-		return sys->sprint("%s.%d.%d", classes[c].name, subclass, proto);
-	if (classes[c].subclass[sc].proto == nil)
-		return sys->sprint("%s.%s.%d", classes[c].name, classes[c].subclass[sc].name, proto);
-	for (p := 0; p < len classes[c].subclass[sc].proto; p++)
-		if (classes[c].subclass[sc].proto[p].proto == proto)
-			break;
-	if (p >= len classes[c].subclass[sc].proto)
-		return sys->sprint("%s.%s.%d", classes[c].name, classes[c].subclass[sc].name, proto);
-	return sys->sprint("%s.%s.%s", classes[c].name, classes[c].subclass[sc].name,
-		classes[c].subclass[sc].proto[p].name);
-}
+Class(csp:int): int {return (csp) & 16rff;}
+Subclass(csp:int): int {return ((csp)>>8) & 16rff;}
+Proto(csp:int): int {return ((csp)>>16) & 16rff;}
+CSP(c,s,p:int): int {return (c) | (s)<<8 | (p)<<16;}
 
 init() {
 	sys = load Sys Sys->PATH;

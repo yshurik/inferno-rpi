@@ -63,4 +63,5 @@ extern char Estalled[];		/* endpoint stalled */
 extern char Enotconf[];		/* endpoint not configured */
 extern char Edetach[];		/* device is detached */
 extern char Echange[];		/* media or partition has changed */
+extern char Enotfound[];	/* file not found */
 

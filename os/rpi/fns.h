@@ -67,4 +67,6 @@ void	links(void);
 int	fpiarm(Ureg*);
 
 char*	getconf(char*);
+char *	getethermac(void);
+
 
