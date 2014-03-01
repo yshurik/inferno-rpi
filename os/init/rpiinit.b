@@ -47,6 +47,10 @@ init(nil: ref Draw->Context, nil: list of string)
 	#sys->print("fdisk:\n%s\n",string buf);
 	#sdd = sdc = nil;
 
+	x := 10.25;
+	y := 734.;
+	sys->print("\n\nfloat point div %f/%f=%f\n\n", x,y,x/y);
+
 	usbd->init(nil,nil);
 	spawn shell->init(nil, nil);
 }

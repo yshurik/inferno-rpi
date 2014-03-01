@@ -4,29 +4,27 @@
  * all arithmetic is done in double precision.
  * the FP trap status isn't updated.
  */
-#include	"u.h"
+#include "u.h"
 #include	"../port/lib.h"
 #include	"mem.h"
 #include	"dat.h"
 #include	"fns.h"
+#include	"io.h"
 
 #include	"ureg.h"
 
-#include	"armv6.h"
-#include	"fpi.h"
+#include "fpi.h"
 
-#define ARM7500			/* emulate old pre-VFP opcodes */
+// #define	R13OK	undef this if correct kernel r13 isn't in Ureg; check calculation in fpiarm below
 
-/* undef this if correct kernel r13 isn't in Ureg;
- * check calculation in fpiarm below
- */
+#define	REG(x) (*(long*)(((char*)(ur))+roff[(x)]))
+#define	FPENV	(*(ufp))
+#define	FR(x) (*(Internal*)(ufp)->regs[(x)&7])
 
-#define	REG(ur, x) (*(long*)(((char*)(ur))+roff[(x)]))
-#ifdef ARM7500
-#define	FR(ufp, x) (*(Internal*)(ufp)->regs[(x)&7])
-#else
-#define	FR(ufp, x) (*(Internal*)(ufp)->regs[(x)&(Nfpregs - 1)])
-#endif
+/* BUG: check fetch (not worthwhile in Inferno) */
+#define	getubyte(a) (*(uchar*)(a))
+#define	getuword(a) (*(ushort*)(a))
+#define	getulong(a) (*(ulong*)(a))
 
 typedef struct FP2 FP2;
 typedef struct FP1 FP1;
@@ -49,9 +47,7 @@ enum {
 	REGPC = 15,
 };
 
-enum {
-	fpemudebug = 0,
-};
+int	fpemudebug = 0;
 
 #undef OFR
 #define	OFR(X)	((ulong)&((Ureg*)0)->X)
@@ -60,10 +56,14 @@ static	int	roff[] = {
 	OFR(r0), OFR(r1), OFR(r2), OFR(r3),
 	OFR(r4), OFR(r5), OFR(r6), OFR(r7),
 	OFR(r8), OFR(r9), OFR(r10), OFR(r11),
+#ifdef R13OK
 	OFR(r12), OFR(r13), OFR(r14), OFR(pc),
+#else
+	OFR(r12), OFR(type), OFR(r14), OFR(pc),
+#endif
 };
 
-static Internal fpconst[8] = {		/* indexed by op&7 (ARM 7500 FPA) */
+static Internal fpconst[8] = {	/* indexed by op&7 */
 	/* s, e, l, h */
 	{0, 0x1, 0x00000000, 0x00000000}, /* 0.0 */
 	{0, 0x3FF, 0x00000000, 0x08000000},	/* 1.0 */
@@ -163,10 +163,6 @@ frnd(Internal *m, Internal *d)
 	}
 }
 
-/*
- * ARM 7500 FPA opcodes
- */
-
 static	FP1	optab1[16] = {	/* Fd := OP Fm */
 [0]	{"MOVF",	fmov},
 [1]	{"NEGF",	fmovn},
@@ -196,17 +192,12 @@ static ulong
 fcmp(Internal *n, Internal *m)
 {
 	int i;
-	Internal rm, rn;
 
 	if(IsWeird(m) || IsWeird(n)){
 		/* BUG: should trap if not masked */
 		return V|C;
 	}
-	rn = *n;
-	rm = *m;
-	fpiround(&rn);
-	fpiround(&rm);
-	i = fpicmp(&rn, &rm);
+	i = fpicmp(n, m);
 	if(i > 0)
 		return C;
 	else if(i == 0)
@@ -221,7 +212,7 @@ fld(void (*f)(Internal*, void*), int d, ulong ea, int n, FPenv *ufp)
 	void *mem;
 
 	mem = (void*)ea;
-	(*f)(&FR(ufp, d), mem);
+	(*f)(&FR(d), mem);
 	if(fpemudebug)
 		print("MOV%c #%lux, F%d\n", n==8? 'D': 'F', ea, d);
 }
@@ -233,7 +224,7 @@ fst(void (*f)(void*, Internal*), ulong ea, int s, int n, FPenv *ufp)
 	void *mem;
 
 	mem = (void*)ea;
-	tmp = FR(ufp, s);
+	tmp = FR(s);
 	if(fpemudebug)
 		print("MOV%c	F%d,#%lux\n", n==8? 'D': 'F', s, ea);
 	(*f)(mem, &tmp);
@@ -311,7 +302,7 @@ fpemu(ulong pc, ulong op, Ureg *ur, FPenv *ufp)
 		off = (op&0xFF)<<2;
 		if((op & (1<<23)) == 0)
 			off = -off;
-		ea = REG(ur, rn);
+		ea = REG(rn);
 		if(rn == REGPC)
 			ea += 8;
 		if(op & (1<<24))
@@ -331,7 +322,7 @@ fpemu(ulong pc, ulong op, Ureg *ur, FPenv *ufp)
 		if((op & (1<<24)) == 0)
 			ea += off;
 		if(op & (1<<21))
-			REG(ur, rn) = ea;
+			REG(rn) = ea;
 		return;
 	}
 
@@ -346,15 +337,13 @@ fpemu(ulong pc, ulong op, Ureg *ur, FPenv *ufp)
 		 */
 		if(rd == 15 && op & (1<<20)){
 			rn = (op>>16)&7;
-			fn = &FR(ufp, rn);
+			fn = &FR(rn);
 			if(op & (1<<3)){
 				fm = &fpconst[op&7];
-				if(fpemudebug)
-					tag = 'C';
+				tag = 'C';
 			}else{
-				fm = &FR(ufp, op&7);
-				if(fpemudebug)
-					tag = 'F';
+				fm = &FR(op&7);
+				tag = 'F';
 			}
 			switch((op>>21)&7){
 			default:
@@ -373,8 +362,7 @@ fpemu(ulong pc, ulong op, Ureg *ur, FPenv *ufp)
 				break;
 			}
 			if(fpemudebug)
-				print("CMPF	%c%d,F%ld =%#lux\n",
-					tag, rn, op&7, ur->psr>>28);
+				print("CMPF	%c%d,F%ld =%x\n", tag, rn, op&7, ur->psr>>28);
 			return;
 		}
 
@@ -386,7 +374,7 @@ fpemu(ulong pc, ulong op, Ureg *ur, FPenv *ufp)
 			unimp(pc, op);
 		case 0:	/* FLT */
 			rn = (op>>16) & 7;
-			fpiw2i(&FR(ufp, rn), &REG(ur, rd));
+			fpiw2i(&FR(rn), &REG(rd));
 			if(fpemudebug)
 				print("MOVW[FD]	R%d, F%d\n", rd, rn);
 			break;
@@ -394,28 +382,28 @@ fpemu(ulong pc, ulong op, Ureg *ur, FPenv *ufp)
 			if(op & (1<<3))
 				unimp(pc, op);
 			rn = op & 7;
-			tmp = FR(ufp, rn);
-			fpii2w(&REG(ur, rd), &tmp);
+			tmp = FR(rn);
+			fpii2w(&REG(rd), &tmp);
 			if(fpemudebug)
-				print("MOV[FD]W	F%d, R%d =%ld\n", rn, rd, REG(ur, rd));
+				print("MOV[FD]W	F%d, R%d =%ld\n", rn, rd, REG(rd));
 			break;
 		case 2:	/* FPSR := Rd */
-			ufp->status = REG(ur, rd);
+			FPENV.status = REG(rd);
 			if(fpemudebug)
 				print("MOVW	R%d, FPSR\n", rd);
 			break;
 		case 3:	/* Rd := FPSR */
-			REG(ur, rd) = ufp->status;
+			REG(rd) = FPENV.status;
 			if(fpemudebug)
 				print("MOVW	FPSR, R%d\n", rd);
 			break;
 		case 4:	/* FPCR := Rd */
-			ufp->control = REG(ur, rd);
+			FPENV.control = REG(rd);
 			if(fpemudebug)
 				print("MOVW	R%d, FPCR\n", rd);
 			break;
 		case 5:	/* Rd := FPCR */
-			REG(ur, rd) = ufp->control;
+			REG(rd) = FPENV.control;
 			if(fpemudebug)
 				print("MOVW	FPCR, R%d\n", rd);
 			break;
@@ -429,12 +417,10 @@ fpemu(ulong pc, ulong op, Ureg *ur, FPenv *ufp)
 
 	if(op & (1<<3)){	/* constant */
 		fm = &fpconst[op&7];
-		if(fpemudebug)
-			tag = 'C';
+		tag = 'C';
 	}else{
-		fm = &FR(ufp, op&7);
-		if(fpemudebug)
-			tag = 'F';
+		fm = &FR(op&7);
+		tag = 'F';
 	}
 	rd = (op>>12)&7;
 	o = (op>>20)&0xF;
@@ -445,7 +431,7 @@ fpemu(ulong pc, ulong op, Ureg *ur, FPenv *ufp)
 			unimp(pc, op);
 		if(fpemudebug)
 			print("%s	%c%ld,F%d\n", fp->name, tag, op&7, rd);
-		(*fp->f)(fm, &FR(ufp, rd));
+		(*fp->f)(fm, &FR(rd));
 	} else {
 		FP2 *fp;
 		fp = &optab2[o];
@@ -454,7 +440,7 @@ fpemu(ulong pc, ulong op, Ureg *ur, FPenv *ufp)
 		rn = (op>>16)&7;
 		if(fpemudebug)
 			print("%s	%c%ld,F%d,F%d\n", fp->name, tag, op&7, rn, rd);
-		(*fp->f)(*fm, FR(ufp, rn), &FR(ufp, rd));
+		(*fp->f)(*fm, FR(rn), &FR(rd));
 	}
 }
 
@@ -464,44 +450,34 @@ fpemu(ulong pc, ulong op, Ureg *ur, FPenv *ufp)
 int
 fpiarm(Ureg *ur)
 {
-	ulong op, o, cp;
+	ulong op, o;
 	FPenv *ufp;
 	int n;
 
-	if(up == nil)
+#ifndef R13OK
+/*	ur->type = &ur->pc+1;	/* calculate kernel sp/R13 and put it here for roff[13] */
+	ur->type = (ulong)(ur + 1);
+#endif
+	if (up == nil)
 		panic("fpiarm not in a process");
-	ufp = &up->fpsave.env;
-	/*
-	 * because all the emulated fp state is in the proc structure,
-	 * it need not be saved/restored
-	 */
-	switch(up->fpstate){
-	case FPACTIVE:
-	case FPINACTIVE:
-		error("illegal instruction: emulated fpu opcode in VFP mode");
-	case FPINIT:
-		assert(sizeof(Internal) <= sizeof(ufp->regs[0]));
-		up->fpstate = FPEMU;
+	ufp = &up->env->fpu;	/* because all the state is in Osenv, it need not be saved/restored */
+	if(ufp->fpistate != FPACTIVE) {
+		ufp->fpistate = FPACTIVE;
 		ufp->control = 0;
-		ufp->status = (0x01<<28)|(1<<12); /* sw emulation, alt. C flag */
+		ufp->status = (0x01<<28)|(1<<12);	/* software emulation, alternative C flag */
 		for(n = 0; n < 8; n++)
-			FR(ufp, n) = fpconst[0];
+			FR(n) = fpconst[0];
 	}
-	for(n=0; ;n++){
-		validaddr((void*)(ur->pc), 4, 0);
-		op = *(ulong*)(ur->pc);
-		if(fpemudebug)
-			print("%#lux: %#8.8lux ", ur->pc, op);
+	for(n=0;;n++){
+		op = getulong(ur->pc);
 		o = (op>>24) & 0xF;
-		cp = (op>>8) & 0xF;
-		if(!ISFPAOP(cp, o)) {
+		if(((op>>8) & 0xF) != 1 || o != 0xE && (o&~1) != 0xC)
 			break;
-		}
 		if(condok(ur->psr, op>>28))
-		;//	fpemu(ur->pc, op, ur, ufp);
-		ur->pc += 4;		/* pretend cpu executed the instr */
+			fpemu(ur->pc, op, ur, ufp);
+		ur->pc += 4;
+		if(anyhigher())
+			sched();
 	}
-	if(fpemudebug)
-		print("\n");
 	return n;
 }

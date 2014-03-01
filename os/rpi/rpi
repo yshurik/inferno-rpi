@@ -61,8 +61,6 @@ port
 	discall
 	exception
 	exportfs
-	fpi
-	fpimem
 	inferno
 	latin1
 	mul64fract

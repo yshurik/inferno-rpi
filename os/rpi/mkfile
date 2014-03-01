@@ -24,7 +24,9 @@ OBJ=\
 	main.$O\
 	mmu.$O\
 	vcore.$O\
+	fpi.$O\
 	fpiarm.$O\
+	fpimem.$O\
 	$IP\
 	$DEVS\
 	$ETHERS\
@@ -42,6 +44,7 @@ HFILES=\
 	dat.h\
 	fns.h\
 	io.h\
+	fpi.h\
 
 CFLAGS=-wFV -I./include -I$ROOT/include -I$ROOT/libinterp
 KERNDATE=`{$NDATE}
@@ -51,7 +54,7 @@ default:V: i$CONF
 
 i$CONF: $OBJ $CONF.c $CONF.root.h $LIBNAMES
 	$CC $CFLAGS -DKERNDATE=$KERNDATE $CONF.c
-	$LD -l -o $target -R4 -T$loadaddr $OBJ $CONF.$O $LIBFILES
+	$LD -f -l -o $target -R4 -T$loadaddr $OBJ $CONF.$O $LIBFILES
 	echo Complete
 
 <../port/portmkfile
