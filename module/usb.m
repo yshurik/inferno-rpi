@@ -271,6 +271,11 @@ Usb: module
 	usbdebug: int;
 	dprint: fn(n: int, s: string);
 
+	Class: fn(csp:int): int;
+	Subclass: fn(csp:int): int;
+	Proto: fn(csp:int): int;
+	CSP: fn(c,s,p:int): int;
+
 	init: fn();
 	get2: fn(b: array of byte): int;
 	put2: fn(buf: array of byte, v: int);
@@ -282,7 +287,6 @@ Usb: module
 	bigput4: fn(buf: array of byte, v: int);
 	memset: fn(b: array of byte, v: int);
 	strtol: fn(s: string, base: int): (int, string);
-	sclass: fn(class, subclass, proto: int): string;
 };
 
 UsbDriver: module
