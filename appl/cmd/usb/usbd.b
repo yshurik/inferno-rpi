@@ -23,12 +23,13 @@ include "usb.m";
 	Rgetdesc,Rsetconf,Rsetaddress: import usb;
 	Clhub: import usb;
 	Difacelen,Dhublen,Deplen: import usb;
-	Dep,Ddev,Dhub,Dconf,Diface: import usb;
+	Dep,Ddev,Dhub,Diface: import usb;
 	Fhalt: import usb;
 	Ein,Eout,Eboth,Econtrol: import usb;
 	Ep,Dev,Hub,Port,Conf,Desc,Altc,Iface,Usbdev, mkep,mkhub,mkport,mkusbdev: import usb;
 	hex: import usb;
 	usbcmd: import usb;
+	usbdebug: import usb;
 include "bufio.m";
 	bufio: Bufio;
 	Iobuf: import bufio;
@@ -42,7 +43,6 @@ Usbd: module
 
 usbbase: string;
 verbose: int;
-usbdebug: int;
 stderr: ref Sys->FD;
 
 ########################### dev part ##########################
@@ -377,7 +377,7 @@ portattach(h: ref Hub, p, sts: int): ref Dev {
 		{ sys->fprint(stderr, "usbd: %s: port %d: getmaxpkt: %r\n", nd.dir, p); break Fail; }
 
 	if(usbdebug)
-		sys->fprint(stderr, "usbd; %s: port %d: maxpkt %d\n", d.dir, p, mp);
+		sys->fprint(stderr, "usbd: %s: port %d: maxpkt %d\n", d.dir, p, mp);
 	usb->devctl(nd, sys->sprint("maxpkt %d", mp));
 
 	if((sts & PSslow) != 0 && sp =="full")
