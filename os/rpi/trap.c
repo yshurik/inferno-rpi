@@ -138,7 +138,7 @@ irqenable(int irq, void (*f)(Ureg*, void*), void* a)
 		vctl = v;
 		*enable = v->mask;
 	}
-	print("Enabled irq %d\n", irq);
+	//print("Enabled irq %d\n", irq);
 }
 
 /* called by trap to handle irq interrupts. */

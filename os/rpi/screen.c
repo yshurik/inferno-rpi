@@ -39,6 +39,7 @@ Cursor  arrow = {
 };
 
 Memimage *gscreen;
+Cursorinfo cursor;
 
 static Memdata xgdata;
 
@@ -71,6 +72,42 @@ static void myscreenputs(char *s, int n);
 static void screenputc(char *buf);
 static void screenwin(void);
 
+/*
+ * Software cursor.
+ */
+static int	swvisible;	/* is the cursor visible? */
+static int	swenabled;	/* is the cursor supposed to be on the screen? */
+static Memimage *swback;	/* screen under cursor */
+static Memimage *swimg;		/* cursor image */
+static Memimage *swmask;	/* cursor mask */
+static Memimage *swimg1;
+static Memimage *swmask1;
+
+static Point	swoffset;
+static Rectangle swrect;	/* screen rectangle in swback */
+static Point	swpt;		/* desired cursor location */
+static Point	swvispt;	/* actual cursor location */
+static int	swvers;		/* incremented each time cursor image changes */
+static int	swvisvers;	/* the version on the screen */
+
+/*
+ * called with drawlock locked for us, most of the time.
+ * kernel prints at inopportune times might mean we don't
+ * hold the lock, but memimagedraw is now reentrant so
+ * that should be okay: worst case we get cursor droppings.
+ */
+static void
+swcursorhide(void)
+{
+	if(swvisible == 0)
+		return;
+	if(swback == nil)
+		return;
+	swvisible = 0;
+	memimagedraw(gscreen, swrect, swback, ZP, memopaque, ZP, S);
+	flushmemscreen(swrect);
+}
+
 static int
 screensize(void)
 {
@@ -87,7 +124,7 @@ screensize(void)
 }
 
 void
-screeninit(void) 
+screeninit(void)
 {
     uchar *fb;
     int set;
@@ -96,25 +133,25 @@ screeninit(void)
     set = screensize() == 0;
     fb = fbinit(set, &xgscreen.r.max.x, &xgscreen.r.max.y, &xgscreen.depth);
     if(fb == nil){
-        print("can't initialise %dx%dx%d framebuffer \n",
-            xgscreen.r.max.x, xgscreen.r.max.y, xgscreen.depth);
-        return;
+	print("can't initialise %dx%dx%d framebuffer \n",
+	    xgscreen.r.max.x, xgscreen.r.max.y, xgscreen.depth);
+	return;
     }
     xgscreen.clipr = xgscreen.r;
     switch(xgscreen.depth){
     default:
-        print("unsupported screen depth %d\n", xgscreen.depth);
-        xgscreen.depth = 16;
-        /* fall through */
+	print("unsupported screen depth %d\n", xgscreen.depth);
+	xgscreen.depth = 16;
+	/* fall through */
     case 16:
-        chan = RGB16;
-        break;
+	chan = RGB16;
+	break;
     case 24:
-        chan = BGR24;
-        break;
+	chan = BGR24;
+	break;
     case 32:
-        chan = ARGB32;
-        break;
+	chan = ARGB32;
+	break;
     }
     memsetchan(&xgscreen, chan);
     conf.monitor = 1;
@@ -216,7 +253,7 @@ myscreenputs(char *s, int n)
 	if(!islo()) {
 		/* don't deadlock trying to print in interrupt */
 		if(!canlock(&screenlock))
-			return;	
+			return;
 	}
 	else
 		lock(&screenlock);
@@ -321,3 +358,68 @@ screenputc(char *buf)
 		break;
 	}
 }
+
+static void
+swcursordraw(void)
+{
+	int dounlock;
+
+	if(swvisible)
+		return;
+	if(swenabled == 0)
+		return;
+	if(swback == nil || swimg1 == nil || swmask1 == nil)
+		return;
+	//dounlock = canqlock(&drawlock);
+	swvispt = swpt;
+	swvisvers = swvers;
+	swrect = rectaddpt(Rect(0,0,16,16), swvispt);
+	memimagedraw(swback, swback->r, gscreen, swpt, memopaque, ZP, S);
+	memimagedraw(gscreen, swrect, swimg1, ZP, swmask1, ZP, SoverD);
+	flushmemscreen(swrect);
+	swvisible = 1;
+	//if(dounlock)
+	//	qunlock(&drawlock);
+}
+
+void
+cursorenable(void)
+{
+	cursoron(1);
+}
+
+int
+cursoron(int dolock)
+{
+	int retry;
+
+	if (dolock)
+		lock(&cursor);
+	//if (canqlock(&drawlock)) {
+		retry = 0;
+		swcursorhide();
+		swcursordraw();
+	//	qunlock(&drawlock);
+	//} else
+	//	retry = 1;
+	if (dolock)
+		unlock(&cursor);
+	return retry;
+}
+
+void
+cursordisable(void)
+{
+	cursoroff(0);
+}
+
+void
+cursoroff(int dolock)
+{
+	if (dolock)
+		lock(&cursor);
+	swcursorhide();
+	if (dolock)
+		unlock(&cursor);
+}
+

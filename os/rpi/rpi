@@ -9,6 +9,7 @@ dev
 	dup
 	uart
 	draw screen
+	pointer
 	usb
 	kbin kbd
 	sd
@@ -137,6 +138,7 @@ root
 	/lib/usbdb
 	/dis/usb/usbd.dis
 	/dis/lib/usb/usb.dis
+	/dis/lib/usb/mice.dis
 	/dis/lib/usb/usbkb.dis
 	/dis/lib/usb/ethersmsc.dis
 # ethernet, dhcp
@@ -169,4 +171,11 @@ root
 	/dis/disk/prep.dis
 	/dis/lib/disks.dis
 	/dis/lib/styx.dis
+# structure
+	/man	/
+	/fonts	/
+	/icons	/
+	/module	/
+	/locale	/
+
 
