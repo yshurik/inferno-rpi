@@ -11,8 +11,10 @@ include "usb.m";
 include "string.m";
 	str: String;
 
-dprint(n: int, s: string)
-	{if(usbdebug) sys->fprint(sys->fildes(n), "%s: %s", argv0, s);}
+dprint(s: string)
+	{if(usbdebug) sys->fprint(sys->fildes(2), "%s: %s", argv0, s);}
+ddprint(s: string)
+	{if(usbdebug>1) sys->fprint(sys->fildes(2), "%s: %s", argv0, s);}
 
 mkhub(): ref Hub { h := ref Hub(0,0,0,0,0,0,0,nil,0,0,nil,nil); return h; }
 mkport(): ref Port { p := ref Port(0,0,0,0,nil,nil,0); return p; }
@@ -61,7 +63,7 @@ openep(d: ref Dev, id: int): ref Dev
 		mode = "w";
 	name := sys->sprint("/dev/usb/ep%d.%d", d.id, id);
 	if(devctl(d, sys->sprint("new %d %d %s", id, ep.typ, mode)) < 0){
-		dprint(2, sys->sprint("%s: new: %r\n", d.dir));
+		dprint(sys->sprint("%s: new: %r\n", d.dir));
 		return nil;
 	}
 	epd := opendev(name);
@@ -71,13 +73,13 @@ openep(d: ref Dev, id: int): ref Dev
 	if(devctl(epd, sys->sprint("maxpkt %d", ep.maxpkt)) < 0)
 		sys->fprint(sys->fildes(2), "%s: %s: openep: maxpkt: %r\n", argv0, epd.dir);
 	else
-		dprint(2, sys->sprint("%s: maxpkt %d\n", epd.dir, ep.maxpkt));
+		dprint(sys->sprint("%s: maxpkt %d\n", epd.dir, ep.maxpkt));
 	epd.maxpkt = ep.maxpkt;
 	ac := ep.iface.altc[0];
 	if(ep.ntds > 1 && devctl(epd, sys->sprint("ntds %d", ep.ntds)) < 0)
 		sys->fprint(sys->fildes(2), "%s: %s: openep: ntds: %r\n", argv0, epd.dir);
 	else
-		dprint(2, sys->sprint("%s: ntds %d\n", epd.dir, ep.ntds));
+		dprint(sys->sprint("%s: ntds %d\n", epd.dir, ep.ntds));
 
 	#
 	# For iso endpoints and high speed interrupt endpoints the pollival is
@@ -100,10 +102,9 @@ opendev(fnm: string): ref Dev {
 	d.cfd = sys->open(d.dir+"/ctl", sys->ORDWR);
 	d.id = devnameid(fnm);
 	if(d.cfd == nil){
-		#sys->fprint(stderr, "usbd: can't open endpoint %s: %r", d.dir);
+		sys->fprint(sys->fildes(2), "usb: can't open endpoint %s: %r", d.dir);
 		return nil;
 	}
-	#sys->fprint(stderr, "usbd: opendev %s\n", fnm);
 	return d;
 }
 opendevdata(d: ref Dev, mode: int): ref Sys->FD {
@@ -111,7 +112,6 @@ opendevdata(d: ref Dev, mode: int): ref Sys->FD {
 	return d.dfd;
 }
 devctl(d: ref Dev, s: string):int {
-	#sys->fprint(stderr, "devctl: %s\n", s);
 	buf := sys->aprint("%s",s);
 	return sys->write(d.cfd, buf, len buf);
 }
@@ -178,7 +178,7 @@ usbcmd(d: ref Dev, ctype: int, req: int, value: int, index: int, data: array of 
 	}
 	if(r >0 && i >=2)
 		# let the user know the device is not in good shape
-		sys->werrstr(sys->sprint("usbd: usbcmd: %s: required %d attempts (%s)\n", d.dir, i, err));
+		sys->werrstr(sys->sprint("usb: usbcmd: %s: required %d attempts (%s)\n", d.dir, i, err));
 	return r;
 }
 
@@ -203,10 +203,8 @@ parsedev(xd: ref Dev, b: array of byte, n: int): int {
 	b = b[:n];
 	bLen := int b[0];
 	bTyp := int b[1];
+	ddprint(sys->sprint("usb: %s: parsedev: %s\n", xd.dir, hex(b)));
 
-	if(usbdebug>1){
-		dprint(2, sys->sprint("usbd: %s: parsedev: %s\n", xd.dir, hex(b)));
-	}
 	if(bLen < Ddevlen){
 		sys->werrstr(sys->sprint("short dev descr. (%d < %d)", bLen, Ddevlen));
 		return -1;
@@ -222,15 +220,15 @@ parsedev(xd: ref Dev, b: array of byte, n: int): int {
 	d.proto = int b[6];
 	d.nconf = int b[17];
 	if(d.nconf ==0)
-		sys->werrstr(sys->sprint("usbd: %s: no configurations\n", xd.dir));
+		sys->werrstr(sys->sprint("usb: %s: no configurations\n", xd.dir));
 	d.vid = get2(b[8:]);
 	d.did = get2(b[10:]);
 	d.dno = get2(b[12:]);
 	d.vsid = int b[14];
 	d.psid = int b[15];
 	d.ssid = int b[16];
-	if(n > Ddevlen && usbdebug>1)
-		dprint(2, sys->sprint("usbd: %s: parsedev: %d bytes left\n", xd.dir, n-Ddevlen));
+	if(n > Ddevlen)
+		ddprint(sys->sprint("usb: %s: parsedev: %d bytes left\n", xd.dir, n-Ddevlen));
 	return Ddevlen;
 }
 
@@ -275,7 +273,7 @@ loaddevdesc(d: ref Dev): int {
 		}
 	}
 	else
-		sys->fprint(sys->fildes(2), "usbd: desc error: %r");
+		sys->fprint(sys->fildes(2), "usb: desc error: %r");
 	return nr;
 }
 
@@ -297,6 +295,7 @@ parseiface(d: ref Usbdev, c: ref Conf, b: array of byte, n: int): (int, ref Ifac
 	ifid, altid: int;
 	ip: ref Iface;
 	b = b[:n];
+	ddprint(sys->sprint("usb: parseiface  %s\n", hex(b)));
 
 	if(n < Difacelen){
 		sys->werrstr("short interface descriptor");
@@ -369,7 +368,7 @@ parseendpt(d: ref Usbdev, nil: ref Conf, ip: ref Iface, altc: ref Altc, b: array
 			break;
 	if(i == len ip.ep){
 		sys->werrstr(sys->sprint("parseendpt: bug: too many end points on interface with csp %#ux", ip.csp));
-		#sys->fprint(stderr, "usbd: %r\n");
+		sys->fprint(sys->fildes(2), "usb: %r\n");
 		return (-1,nil);
 	}
 	epp = ip.ep[i] = ep;
@@ -385,6 +384,7 @@ parsedesc(d: ref Usbdev, c: ref Conf, b: array of byte, n: int): int {
 	ep = nil;
 	altc = nil;
 	b = b[:n];
+	ddprint(sys->sprint("usb: parsedesc  %s\n", hex(b)));
 
 	for(nd :=0; nd < len d.ddesc; nd++)
 		if(d.ddesc[nd] ==nil)
@@ -392,21 +392,19 @@ parsedesc(d: ref Usbdev, c: ref Conf, b: array of byte, n: int): int {
 
 	while(n >2 && int b[0] !=0 && int b[0] <=n){
 		blen := int b[0];
-		#if(usbdebug>1){
-		#	sys->fprint(stderr, "usbd:\t\tparsedesc %s %x[%d] %s\n",
-		#		dname(int b[1]), int b[1], int b[0], hex(b[:blen]));
-		#}
+		ddprint(sys->sprint("usb: parsedesc %s %x[%d] %s\n",
+			dname(int b[1]), int b[1], int b[0], hex(b[:blen])));
 		case int b[1] {
 		Ddev => ;
 		Dconf =>
 			sys->werrstr(sys->sprint("unexpected descriptor %d", int b[1]));
-			#sys->fprint(stderr, "usbd: parsedesc: %r");
+			sys->fprint(sys->fildes(2), "usb: parsedesc: %r");
 			break;
 		Diface =>
 			pin: int;
 			(pin, ip, altc) = parseiface(d, c, b, n);
 			if(pin <0){
-				#sys->fprint(stderr, "usbd: parsedesc: %r\n");
+				sys->fprint(sys->fildes(2), "usb: parsedesc: %r\n");
 				return -1;
 			}
 			break;
@@ -418,14 +416,15 @@ parsedesc(d: ref Usbdev, c: ref Conf, b: array of byte, n: int): int {
 			pen :int;
 			(pen,ep) = parseendpt(d, c, ip, altc, b, n);
 			if(pen <0){
-				#sys->fprint(stderr, "usbd: parsedesc: %r\n");
+				sys->fprint(sys->fildes(2), "usb: parsedesc: %r\n");
 				return -1;
 			}
 			break;
 		* =>
 			if(nd == len d.ddesc){
-				#sys->fprint(stderr, "usbd: parsedesc: too many device-specific descriptors for device %s %s\n",
-				#	d.vendor, d.product);
+				sys->fprint(sys->fildes(2)
+					,"usb: parsedesc: too many device-specific descriptors for device %s %s\n"
+					,d.vendor, d.product);
 				break;
 			}
 			d.ddesc[nd] = ref Desc;
@@ -445,8 +444,8 @@ parsedesc(d: ref Usbdev, c: ref Conf, b: array of byte, n: int): int {
 
 parseconf(d: ref Usbdev, c: ref Conf, b: array of byte, n: int): int {
 	b = b[:n];
-	#if(usbdebug>1)
-	#	sys->fprint(stderr, "usbd:\tparseconf  %s\n", hex(b));
+	ddprint(sys->sprint("usb: parseconf  %s\n", hex(b)));
+
 	if(int b[0] < Dconflen){
 		sys->werrstr("short configuration descriptor");
 		return -1;
@@ -475,22 +474,24 @@ parseconf(d: ref Usbdev, c: ref Conf, b: array of byte, n: int): int {
 	if(n >0 && (nr=parsedesc(d, c, bdesc, n)) <0)
 		return -1;
 	n -= nr;
-	#if(n > 0 && usbdebug>1)
-	#	sys->fprint(stderr, "usbd:\tparseconf: %d bytes left\n", n);
+	if(n > 0)
+		ddprint(sys->sprint("usb: parseconf: %d bytes left\n", n));
 	return l;
 }
 
 loaddevconf(d: ref Dev, n: int): int {
 	if(n >= len d.usb.conf){
 		sys->werrstr("loaddevconf: bug: out of configurations in device");
-		sys->fprint(sys->fildes(2), "usbd: %r\n");
+		sys->fprint(sys->fildes(2), "usb: %r\n");
 		return -1;
 	}
 	buf := array[Maxdevconf] of byte;
 	typ := Rd2h|Rstd|Rdev;
 	nr := usbcmd(d, typ, Rgetdesc, Dconf<<8|n, 0, buf, Maxdevconf);
 	if(nr < Dconflen){
-		return -1;
+		nr = usbcmd(d, typ, Rgetdesc, Dconf<<8|n, 0, buf, 64);
+		if(nr < Dconflen)
+			return -1;
 	}
 	if(d.usb.conf[n] ==nil) {
 		d.usb.conf[n] = ref Conf;

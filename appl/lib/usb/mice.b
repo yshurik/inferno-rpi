@@ -38,7 +38,7 @@ mousework(pidc: chan of int, usb: Usb, d: ref Usb->Dev, fd: ref Sys->FD)
 			continue;
 		}
 		if(usb->usbdebug)
-			usb->dprint(2, sys->sprint("%d: %d\n", sys->millisec(), n));
+			usb->dprint(sys->sprint("%d: %d\n", sys->millisec(), n));
 		dx := int buf[1];
 		if(dx >= 128)
 			dx = dx - 256;
@@ -55,13 +55,14 @@ mousework(pidc: chan of int, usb: Usb, d: ref Usb->Dev, fd: ref Sys->FD)
 		sys->write(fd, s, len s);
 	}
 	if(n < 0 && usb->usbdebug)
-		usb->dprint(2, sys->sprint("read failure in mousework: %r\n"));
+		usb->dprint(sys->sprint("read failure in mousework: %r\n"));
 	workpid = -1;
 }
 
 init(usb: Usb, d: ref Usb->Dev): int
 {
 	sys = load Sys Sys->PATH;
+	sys->print("usbmouse: trace0\n");
 
 	ud := d.usb;
 	for(i := 0; i < len ud.ep; ++i)
@@ -78,23 +79,29 @@ init(usb: Usb, d: ref Usb->Dev): int
 		sys->print("usbmouse: failed to open pointer for writing: %r\n");
 		return -1;
 	}
+	sys->print("usbmouse: trace1\n");
 	r := Usb->Rh2d|Usb->Rclass|Usb->Riface;
 	ret := usb->usbcmd(d, r, Setproto, Bootproto, ud.ep[i].id, nil, 0);
 	if(ret >= 0){
+		sys->print("usbmouse: trace2\n");
 		kep := usb->openep(d, ud.ep[i].id);
 		if(kep == nil){
 			sys->fprint(sys->fildes(2), "mouse: %s: openep %d: %r\n",
 				d.dir, ud.ep[i].id);
 			return -1;
 		}
+		sys->print("usbmouse: trace3\n");
 		fd := usb->opendevdata(kep, Sys->OREAD);
 		if(fd == nil){
 			sys->fprint(sys->fildes(2), "mouse: %s: opendevdata: %r\n", kep.dir);
 			usb->closedev(kep);
 			return -1;
 		}
+		sys->print("usbmouse: trace4\n");
 		pidc := chan of int;
 		spawn mousework(pidc, usb, kep, outfd);
+		sys->print("usbmouse: trace5\n");
+
 		workpid =<- pidc;
 	}
 	else

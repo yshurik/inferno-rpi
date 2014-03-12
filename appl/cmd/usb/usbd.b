@@ -73,7 +73,7 @@ startdev(pp: ref Port): int {
 		if(pp.hub ==nil) return -1;
 		return 0;
 	}
-	else if (ud.nconf >= 1 && (path := searchdriverdatabase(ud, ud.conf[0])) != nil) {
+	else if (ud.nconf >= 1 && ud.class !=0 && (path := searchdriverdatabase(ud, ud.conf[0])) != nil) {
 		pp.dev.mod = load UsbDriver path;
 		if (pp.dev.mod == nil)
 			sys->fprint(stderr, "usbd: failed to load %s\n", path);
@@ -318,7 +318,7 @@ portattach(h: ref Hub, p, sts: int): ref Dev {
 
 	Fail: do {
 	if(usbdebug)
-		sys->fprint(stderr, "usbd: %s: port %d attach sts %#ux\n", d.dir, p, sts);
+		sys->fprint(stderr, "usbd: %s: port %d: attach sts %#ux\n", d.dir, p, sts);
 	sys->sleep(Connectdelay);
 	if(hubfeature(h, p, Fportenable, 1) <0)
 		sys->fprint(stderr, "usbd: %s: port %d: enable: %r\n", d.dir, p);
@@ -416,7 +416,6 @@ portattach(h: ref Hub, p, sts: int): ref Dev {
 
 portdetach(h: ref Hub, p: int)
 {
-#	extern void usbfsgone(char*);
 	d := h.dev;
 	pp := h.port[p];
 
