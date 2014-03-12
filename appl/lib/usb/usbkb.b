@@ -105,7 +105,7 @@ setbootproto(f: ref KDev, eid: int): int {
 	nr, r, id: int;
 
 	r = Usb->Rh2d|Usb->Rclass|Usb->Riface;
-	f.usb->dprint(2, "setting boot protocol\n");
+	f.usb->dprint("setting boot protocol\n");
 	id = f.dev.usb.ep[eid].iface.id;
 	nr = f.usb->usbcmd(f.dev, r, Setproto, Bootproto, id, nil, 0);
 	if(nr < 0)
