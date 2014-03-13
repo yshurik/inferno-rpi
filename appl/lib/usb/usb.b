@@ -485,14 +485,19 @@ loaddevconf(d: ref Dev, n: int): int {
 		sys->fprint(sys->fildes(2), "usb: %r\n");
 		return -1;
 	}
-	buf := array[Maxdevconf] of byte;
+	buf := array[Dconflen] of byte;
 	typ := Rd2h|Rstd|Rdev;
-	nr := usbcmd(d, typ, Rgetdesc, Dconf<<8|n, 0, buf, Maxdevconf);
-	if(nr < Dconflen){
-		nr = usbcmd(d, typ, Rgetdesc, Dconf<<8|n, 0, buf, 64);
-		if(nr < Dconflen)
-			return -1;
-	}
+	nr := usbcmd(d, typ, Rgetdesc, Dconf<<8|n, 0, buf, Dconflen);
+	if(nr != Dconflen)
+		return -1;
+
+	buf_len := get2(buf[2:]);
+	buf = array[buf_len] of byte;
+
+	nr = usbcmd(d, typ, Rgetdesc, Dconf<<8|n, 0, buf, buf_len);
+	if(nr != buf_len)
+		return -1;
+
 	if(d.usb.conf[n] ==nil) {
 		d.usb.conf[n] = ref Conf;
 		d.usb.conf[n].iface = array[Niface] of ref Iface;
