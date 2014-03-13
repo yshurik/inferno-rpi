@@ -14,7 +14,7 @@ include "arg.m";
 include "usb.m";
 	usb: Usb;
 	Nep, Nconf,Nddesc,Uctries,Ucdelay,Naltc,Niface: import usb;
-	Maxdevconf,pollms: import usb;
+	pollms: import usb;
 	Rd2h,Rh2d: import usb;
 	Fportpower,Fportindicator,Fportenable,Fportreset: import usb;
 	PSsuspend,PSreset,PSslow,PShigh,PSenable,PSpresent,PSchange,PSstatuschg: import usb;
