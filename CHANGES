@@ -1,3 +1,10 @@
+20140302
+	utils/cc/funct.c - remove out-of-bounds reference
+	os/ipaq1110, ip/ipaux.c, os/sa1110 - add default cases to keep compiler happy
+20140223
+	/dis/sig: use raise not exit for errors
+20140105
+	incorrect check on keyname in getauthinfo [issue 306]
 20130906
 	remove redundant code
 20130529
