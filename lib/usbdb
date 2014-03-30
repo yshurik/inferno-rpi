@@ -7,4 +7,8 @@ class 3
 vendor 0x0424
 	product 0xec00
 		load /dis/lib/usb/ethersmsc.dis
-
+		vname RASPBERRY
+		pname ETHERNET
+	product 0x9512
+		vname RASPBERRY
+		pname HUB
