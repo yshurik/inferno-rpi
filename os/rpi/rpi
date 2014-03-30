@@ -109,6 +109,7 @@ root
 	/prog	/
 	/n	/
 	/n/local	/
+	/n/local/sd	/
 	/dis/lib
 	/dis/disk
 	/osinit.dis
@@ -118,10 +119,13 @@ root
 	/dis/cat.dis
 	/dis/bind.dis
 	/dis/mount.dis
+	/dis/listen.dis
+	/dis/export.dis
 	/dis/unmount.dis
 	/dis/pwd.dis
 	/dis/echo.dis
 	/dis/cd.dis
+	/dis/styxlisten.dis
 	/dis/lib/arg.dis
 	/dis/lib/auth.dis
 	/dis/lib/lock.dis
@@ -149,8 +153,6 @@ root
 # disk support
 	/usr	/
 	/usr/inferno	/
-	/usr/inferno/keyring	/
-	/usr/inferno/keyring/default
 	/dis/dd.dis
 	/dis/fs.dis
 	/dis/lib/fslib.dis
@@ -172,6 +174,7 @@ root
 	/dis/lib/disks.dis
 	/dis/lib/styx.dis
 # structure
+	/boot	/
 	/man	/
 	/fonts	/
 	/icons	/

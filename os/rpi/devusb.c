@@ -690,8 +690,8 @@ hciprobe(int cardno, int ctlrno)
 	snprint(name, sizeof(name), "usb%s", hcitypes[cardno].type);
 	intrenable(hp->irq, hp->interrupt, hp, UNKNOWN, name);
 
-	print("#u/usb/ep%d.0: %s: port %#luX irq %d\n",
-		epnb, hcitypes[cardno].type, hp->port, hp->irq);
+	//print("#u/usb/ep%d.0: %s: port %#luX irq %d\n",
+	//	epnb, hcitypes[cardno].type, hp->port, hp->irq);
 	epnb++;
 
 	return hp;

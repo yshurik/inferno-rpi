@@ -17,11 +17,11 @@
 #include "screen.h"
 
 enum {
-	Tabstop     = 4,
-	Scroll      = 8,
-	Wid     = 1024,
-	Ht      = 768,
-	Depth       = 16,
+	Tabstop	= 4,
+	Scroll	= 8,
+	Wid	= 1024,
+	Ht	= 768,
+	Depth	= 32,
 };
 
 Cursor  arrow = {
@@ -45,17 +45,17 @@ static Memdata xgdata;
 
 static Memimage xgscreen =
 {
-    { 0, 0, Wid, Ht },  /* r */
-    { 0, 0, Wid, Ht },  /* clipr */
-    Depth,          /* depth */
-    3,          /* nchan */
-    RGB16,          /* chan */
-    nil,            /* cmap */
-    &xgdata,        /* data */
-    0,          /* zero */
-    0,          /* width in words of a single scan line */
-    0,          /* layer */
-    0,          /* flags */
+	{ 0, 0, Wid, Ht },	/* r */
+	{ 0, 0, Wid, Ht },	/* clipr */
+	Depth,			/* depth */
+	4,			/* nchan */
+	ARGB32,			/* chan */
+	nil,			/* cmap */
+	&xgdata,		/* data */
+	0,			/* zero */
+	0,			/* width in words of a single scan line */
+	0,			/* layer */
+	0,			/* flags */
 };
 
 static Memimage *conscol;
@@ -111,59 +111,59 @@ swcursorhide(void)
 static int
 screensize(void)
 {
-    char *p;
-    char *f[3];
-    int width, height, depth;
+	char *p;
+	char *f[3];
+	int width, height, depth;
 
-    width = 1280;
-    height = 1024;
-    depth = 32;
-    xgscreen.r.max = Pt(width, height);
-    xgscreen.depth = depth;
-    return 0;
+	width = 1280;
+	height = 1024;
+	depth = 32;
+	xgscreen.r.max = Pt(width, height);
+	xgscreen.depth = depth;
+	return 0;
 }
 
 void
 screeninit(void)
 {
-    uchar *fb;
-    int set;
-    ulong chan;
+	uchar *fb;
+	int set;
+	ulong chan;
 
-    set = screensize() == 0;
-    fb = fbinit(set, &xgscreen.r.max.x, &xgscreen.r.max.y, &xgscreen.depth);
-    if(fb == nil){
-	print("can't initialise %dx%dx%d framebuffer \n",
-	    xgscreen.r.max.x, xgscreen.r.max.y, xgscreen.depth);
-	return;
-    }
-    xgscreen.clipr = xgscreen.r;
-    switch(xgscreen.depth){
-    default:
-	print("unsupported screen depth %d\n", xgscreen.depth);
-	xgscreen.depth = 16;
-	/* fall through */
-    case 16:
-	chan = RGB16;
-	break;
-    case 24:
-	chan = BGR24;
-	break;
-    case 32:
-	chan = ARGB32;
-	break;
-    }
-    memsetchan(&xgscreen, chan);
-    conf.monitor = 1;
-    xgdata.bdata = fb;
-    xgdata.ref = 1;
-    gscreen = &xgscreen;
-    gscreen->width = wordsperline(gscreen->r, gscreen->depth);
+	set = screensize() == 0;
+	fb = fbinit(set, &xgscreen.r.max.x, &xgscreen.r.max.y, &xgscreen.depth);
+	if(fb == nil){
+		print("can't initialise %dx%dx%d framebuffer \n",
+		      xgscreen.r.max.x, xgscreen.r.max.y, xgscreen.depth);
+		return;
+	}
+	xgscreen.clipr = xgscreen.r;
+	switch(xgscreen.depth){
+	default:
+		print("unsupported screen depth %d\n", xgscreen.depth);
+		xgscreen.depth = 32;
+		/* fall through */
+	case 16:
+		chan = RGB16;
+		break;
+	case 24:
+		chan = BGR24;
+		break;
+	case 32:
+		chan = ARGB32;
+		break;
+	}
+	memsetchan(&xgscreen, chan);
+	conf.monitor	= 1;
+	xgdata.bdata	= fb;
+	xgdata.ref	= 1;
+	gscreen		= &xgscreen;
+	gscreen->width	= wordsperline(gscreen->r, gscreen->depth);
 
-    memimageinit();
-    memdefont = getmemdefont();
-    screenwin();
-    screenputs = myscreenputs;
+	memimageinit();
+	memdefont = getmemdefont();
+	screenwin();
+	screenputs = myscreenputs;
 }
 
 static void
@@ -174,8 +174,8 @@ screenwin(void)
 	Point p, q;
 	Rectangle r;
 
-	back = memwhite;
-	conscol = memblack;
+	back = memblack;
+	conscol = memwhite;
 
 	orange = allocmemimage(Rect(0, 0, 1, 1), RGB16);
 	orange->flags |= Frepl;
@@ -190,7 +190,7 @@ screenwin(void)
 
 	memimagedraw(gscreen, r, memblack, ZP, memopaque, ZP, S);
 	window = insetrect(r, 4);
-	memimagedraw(gscreen, window, memwhite, ZP, memopaque, ZP, S);
+	memimagedraw(gscreen, window, memblack, ZP, memopaque, ZP, S);
 
 	memimagedraw(gscreen, Rect(window.min.x, window.min.y,
 		window.max.x, window.min.y + h + 5 + 6), orange, ZP, nil, ZP, S);
@@ -359,15 +359,15 @@ screenputc(char *buf)
 	}
 }
 
-static void
+void
 swcursordraw(void)
 {
 	int dounlock;
 
 	if(swvisible)
 		return;
-	if(swenabled == 0)
-		return;
+	//if(swenabled == 0)
+	//	return;
 	if(swback == nil || swimg1 == nil || swmask1 == nil)
 		return;
 	//dounlock = canqlock(&drawlock);
@@ -421,5 +421,119 @@ cursoroff(int dolock)
 	swcursorhide();
 	if (dolock)
 		unlock(&cursor);
+}
+
+static int
+swmove(Point p)
+{
+	swpt = addpt(p, swoffset);
+	return 0;
+}
+
+static void
+swcursorclock(void)
+{
+	int x;
+
+	if(!swenabled)
+		return;
+	swmove(mousexy());
+	if(swvisible && eqpt(swpt, swvispt) && swvers==swvisvers)
+		return;
+
+	x = splhi();
+	if(swenabled)
+	if(!swvisible || !eqpt(swpt, swvispt) || swvers!=swvisvers)
+	//if(canqlock(&drawlock)){
+		swcursorhide();
+		swcursordraw();
+	//	qunlock(&drawlock);
+	//}
+	splx(x);
+}
+
+void
+Cursortocursor(Cursor *c)
+{
+	lock(&cursor);
+	memmove(&cursor.Cursor, c, sizeof(Cursor));
+	setcursor(c);
+	unlock(&cursor);
+}
+
+void
+swcursorinit(void)
+{
+	static int init;
+
+	if(!init){
+		init = 1;
+		addclock0link(swcursorclock, 10);
+		swenabled = 1;
+	}
+	if(swback){
+		freememimage(swback);
+		freememimage(swmask);
+		freememimage(swmask1);
+		freememimage(swimg);
+		freememimage(swimg1);
+	}
+
+	swback  = allocmemimage(Rect(0,0,32,32), gscreen->chan);
+	swmask  = allocmemimage(Rect(0,0,16,16), GREY8);
+	swmask1 = allocmemimage(Rect(0,0,16,16), GREY1);
+	swimg   = allocmemimage(Rect(0,0,16,16), GREY8);
+	swimg1  = allocmemimage(Rect(0,0,16,16), GREY1);
+	if(swback==nil || swmask==nil || swmask1==nil || swimg==nil || swimg1 == nil){
+		print("software cursor: allocmemimage fails\n");
+		return;
+	}
+
+	memfillcolor(swmask, DOpaque);
+	memfillcolor(swmask1, DOpaque);
+	memfillcolor(swimg, DBlack);
+	memfillcolor(swimg1, DBlack);
+	Cursortocursor(&arrow);
+}
+
+static void
+swload(Cursor *curs)
+{
+	uchar *ip, *mp;
+	int i, j, set, clr;
+
+	if(!swimg || !swmask || !swimg1 || !swmask1)
+		return;
+	/*
+	 * Build cursor image and mask.
+	 * Image is just the usual cursor image
+	 * but mask is a transparent alpha mask.
+	 *
+	 * The 16x16x8 memimages do not have
+	 * padding at the end of their scan lines.
+	 */
+	ip = byteaddr(swimg, ZP);
+	mp = byteaddr(swmask, ZP);
+	for(i=0; i<32; i++){
+		set = curs->set[i];
+		clr = curs->clr[i];
+		for(j=0x80; j; j>>=1){
+			*ip++ = set&j ? 0x00 : 0xFF;
+			*mp++ = (clr|set)&j ? 0xFF : 0x00;
+		}
+	}
+	swoffset = curs->offset;
+	swvers++;
+	memimagedraw(swimg1,  swimg1->r,  swimg,  ZP, memopaque, ZP, S);
+	memimagedraw(swmask1, swmask1->r, swmask, ZP, memopaque, ZP, S);
+}
+
+/* called from devmouse */
+void
+setcursor(Cursor* curs)
+{
+	cursoroff(0);
+	swload(curs);
+	cursoron(0);
 }
 

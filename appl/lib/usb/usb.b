@@ -271,6 +271,12 @@ loaddevdesc(d: ref Dev): int {
 			d.usb.product = loaddevstr(d, d.usb.psid);
 			d.usb.serial = loaddevstr(d, d.usb.ssid);
 		}
+		else {
+			if(d.usb.class == Clhub) {
+				d.usb.vendor = "USB";
+				d.usb.product = "HUB";
+			}
+		}
 	}
 	else
 		sys->fprint(sys->fildes(2), "usb: desc error: %r");

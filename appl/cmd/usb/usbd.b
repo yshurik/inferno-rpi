@@ -26,7 +26,8 @@ include "usb.m";
 	Dep,Ddev,Dhub,Diface: import usb;
 	Fhalt: import usb;
 	Ein,Eout,Eboth,Econtrol: import usb;
-	Ep,Dev,Hub,Port,Conf,Desc,Altc,Iface,Usbdev, mkep,mkhub,mkport,mkusbdev: import usb;
+	Ep,Dev,Hub,Port,Conf,Desc,Altc,Iface,Usbdev: import usb;
+	mkep,mkhub,mkport,mkusbdev: import usb;
 	hex: import usb;
 	usbcmd: import usb;
 	usbdebug: import usb;
@@ -39,8 +40,6 @@ Usbd: module
 	init: fn(nil: ref Draw->Context, args: list of string);
 };
 
-
-
 usbbase: string;
 verbose: int;
 stderr: ref Sys->FD;
@@ -52,9 +51,13 @@ startdev(pp: ref Port): int {
 	ud := d.usb;
 
 	usb->writeinfo(d);
-	sys->fprint(stderr,"usbd: start dev: %d.%d.%d\t%s %s %s\n"
-		,ud.class, ud.subclass,ud.proto
-		,ud.vendor,ud.product,ud.serial);
+	if(ud.vendor =="none") {
+		ud.vendor = searchdbkey(ud,"vname");
+		ud.product = searchdbkey(ud,"pname");
+	}
+	sys->fprint(stderr,"usb:%02x:%02x:%02x/%04x:%04x:%s:%s %s\n"
+		,ud.class, ud.subclass,ud.proto, ud.vid, ud.did, d.dir
+		,ud.vendor,ud.product);
 
 	if(ud.class == Clhub){
 		#
@@ -66,8 +69,6 @@ startdev(pp: ref Port): int {
 		pp.hub = newhub(d.dir, d);
 		if(pp.hub ==nil)
 			sys->fprint(stderr, "usbd: %s: %r\n", d.dir);
-		#else
-		#	sys->fprint(stderr, "usb/hub... ");
 		if(usbdebug > 1)
 			usb->devctl(d, "debug 0"); # polled hubs are chatty
 		if(pp.hub ==nil) return -1;
@@ -584,7 +585,7 @@ work(portc: chan of string)
 {
 	fnm : string;
 	while((fnm = <- portc) !=nil) {
-		sys->print("usbd: starting: %s\n", fnm);
+		#sys->print("usbd: starting: %s\n", fnm);
 		h := newhub(fnm, nil);
 		if(h ==nil)
 			sys->fprint(stderr, "usbd: %s: newhub failed: %r\n", fnm);
@@ -631,57 +632,104 @@ Line: adt {
 
 lines: array of Line;
 
-searchdriverdatabase(d: ref Usbdev, conf: ref Conf): string
-{
-	backtracking := 0;
+searchdbkey(d: ref Usbdev, key: string): string {
+	back := 0;
+	level := 0;
+	for (i := 0; i < len lines; i++) {
+		if (back) {
+			if (lines[i].level > level)
+				continue;
+			back = 0;
+		}
+		if (lines[i].level != level) {
+			level = 0;
+			back = 1;
+		}
+
+		if (lines[i].command ==key)
+			return lines[i].svalue;
+
+		case lines[i].command {
+		"class" =>
+			if (d.class != 0) {
+				if (lines[i].value != d.class)
+					back = 1;
+			}
+		"subclass" =>
+			if (d.class != 0) {
+				if (lines[i].value != d.subclass)
+					back = 1;
+			}
+		"proto" =>
+			if (d.class != 0) {
+				if (lines[i].value != d.proto)
+					back = 1;
+			}
+		"vendor" =>
+			if (lines[i].value != d.vid)
+				back =1;
+		"product" =>
+			if (lines[i].value != d.did)
+				back =1;
+		* =>
+			continue;
+		}
+		if (!back)
+			level++;
+	}
+	return "none";
+}
+
+searchdriverdatabase(d: ref Usbdev, nil: ref Conf): string {
+	back := 0;
 	level := 0;
 	for (i := 0; i < len lines; i++) {
 		if (verbose > 1)
 			sys->fprint(stderr, "search line %d: lvl %d cmd %s val %d (back %d lvl %d)\n",
-				i, lines[i].level, lines[i].command, lines[i].value, backtracking, level);
-		if (backtracking) {
+				i, lines[i].level, lines[i].command, lines[i].value, back, level);
+		if (back) {
 			if (lines[i].level > level)
 				continue;
-			backtracking = 0;
+			back = 0;
 		}
 		if (lines[i].level != level) {
 			level = 0;
-			backtracking = 1;
+			back = 1;
 		}
 		case lines[i].command {
 		"class" =>
 			if (d.class != 0) {
 				if (lines[i].value != d.class)
-					backtracking = 1;
+					back = 1;
 			}
 			#else if (lines[i].value != (hd conf.iface[0].altiface).class)
-			#	backtracking = 1;
+			#	back = 1;
 		"subclass" =>
 			if (d.class != 0) {
 				if (lines[i].value != d.subclass)
-					backtracking = 1;
+					back = 1;
 			}
 			#else if (lines[i].value != (hd conf.iface[0].altiface).subclass)
-			#	backtracking = 1;
+			#	back = 1;
 		"proto" =>
 			if (d.class != 0) {
 				if (lines[i].value != d.proto)
-					backtracking = 1;
+					back = 1;
 			}
 			#else if (lines[i].value != (hd conf.iface[0].altiface).proto)
-			#	backtracking = 1;
+			#	back = 1;
 		"vendor" =>
 			if (lines[i].value != d.vid)
-				backtracking  =1;
+				back =1;
 		"product" =>
 			if (lines[i].value != d.did)
-				backtracking  =1;
+				back =1;
 		"load" =>
 			return lines[i].svalue;
 		* =>
 			continue;
 		}
-		if (!backtracking)
+		if (!back)
 			level++;
 	}
 	return nil;
@@ -723,6 +771,10 @@ loaddriverdatabase()
 		"class" or "subclass" or "proto" or "vendor" or "product" =>
 			(lines[lc].value, nil) = usb->strtol(hd tl l, 0);
 		"load" =>
+			lines[lc].svalue = hd tl l;
+		"vname" =>
+			lines[lc].svalue = hd tl l;
+		"pname" =>
 			lines[lc].svalue = hd tl l;
 		* =>
 			continue;
@@ -769,7 +821,7 @@ init(nil: ref Draw->Context, args: list of string)
 
 	loaddriverdatabase();
 
-	sys->print("usbd: base: %s\n", usbbase);
+	#sys->print("usbd: base: %s\n", usbbase);
 	portc := chan of string;
 	spawn work(portc);
 
@@ -784,4 +836,6 @@ init(nil: ref Draw->Context, args: list of string)
 	}
 	portc <- = nil;
 	err := <- portc;
+	if(err != nil)
+		sys->print("usbd: err: %s\n", err);
 }

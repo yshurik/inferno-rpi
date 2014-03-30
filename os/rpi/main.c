@@ -99,6 +99,7 @@ main() {
 	clockinit();
 	printinit();
 	pl011init();
+	swcursorinit();
 
 	rev = getfirmware();
 	print("\nARM %ld MHz id %8.8lux firmware: rev %d\n", (m->cpuhz+500000)/1000000, getcpuid(), rev);

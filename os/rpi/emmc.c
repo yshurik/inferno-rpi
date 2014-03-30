@@ -73,7 +73,7 @@ enum {
 	Clkgendiv		= 0<<5,		/* SD clock divided */
 	Clkgenprog		= 1<<5,		/* SD clock programmable */
 	Clken			= 1<<2,		/* SD clock enable */
-	Clkstable		= 1<<1,	
+	Clkstable		= 1<<1,
 	Clkintlen		= 1<<0,		/* enable internal EMMC clocks */
 
 	/* Cmdtm */
@@ -196,7 +196,7 @@ emmcinit(void)
 		clk = Extfreq;
 	}
 	emmc.extclk = clk;
-	print("%seMMC external clock %lud Mhz\n", s, clk/1000000);
+	//print("%seMMC external clock %lud Mhz\n", s, clk/1000000);
 	r = (u32int*)EMMCREGS;
 	if(0)print("emmc control %8.8ux %8.8ux %8.8ux\n",
 		r[Control0], r[Control1], r[Control2]);
@@ -406,7 +406,7 @@ emmcio(int write, uchar *buf, int len)
 
 static void
 mmcinterrupt(Ureg*, void*)
-{	
+{
 	u32int *r;
 	int i;
 
