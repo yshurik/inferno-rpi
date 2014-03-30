@@ -57,7 +57,7 @@ struct Udev {
 	Unpackfn *unpack;
 	Transmitfn *transmit;
 };
-	
+
 static Cmdtab cmds[] = {
 	{ Bind,		"bind",		7, },
 	{ Unbind,	"unbind",	0, },
@@ -150,7 +150,7 @@ unpacksmsc(Ether *edev, Block *b)
 {
 	ulong hd;
 	int m;
-	
+
 	ddump('@', b);
 	if(BLEN(b) < 4)
 		return -1;
@@ -291,7 +291,7 @@ bind(Ctlr *ctlr, Udev *udev, Cmdbuf *cb)
 	if(parsemac(ctlr->edev->ea, cb->f[4], Eaddrlen) != Eaddrlen)
 		cmderror(cb, "bad etheraddr");
 	memmove(ctlr->edev->addr, ctlr->edev->ea, Eaddrlen);
-	print("\netherusb %s: %E\n", udev->name, ctlr->edev->addr);
+	//print("\netherusb %s: %E\n", udev->name, ctlr->edev->addr);
 	ctlr->buf = buf;
 	ctlr->inchan = inchan;
 	ctlr->outchan = outchan;
@@ -346,7 +346,7 @@ etherusbtransmit(Ether *edev)
 {
 	Ctlr *ctlr;
 	Block *b;
-	
+
 	ctlr = edev->ctlr;
 	while((b = qget(edev->oq)) != nil){
 		ctlr->txpkt++;

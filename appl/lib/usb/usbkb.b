@@ -2,9 +2,15 @@ implement UsbDriver;
 
 include "sys.m";
 	sys: Sys;
+	open,read,write,pctl,fprint,sprint,fildes: import sys;
 include "string.m";
 	str: String;
 include "usb.m";
+	usb: Usb;
+	dprint,usbdebug: import usb;
+	usbcmd,devctl,openep,opendevdata,closedev,memset: import usb;
+	Rd2h,Rh2d,Rstd,Rdev,Rclass,Riface,Rsetconf,Rgetdesc,Eintr,Ein,Dreport: import usb;
+	Dev,Ep: import usb;
 
 Awakemsg	:con int 16rdeaddead;
 Diemsg		:con int 16rbeefbeef;
@@ -15,7 +21,7 @@ Setproto	:con 16r0b;
 Bootproto	:con 0;
 KbdCSP		:con int 16r010103;
 
-# Scan codes (see kbd.c)
+# scan codes (see kbd.c)
 SCesc1		:con byte 16re0;	# first of a 2-character sequence
 SCesc2		:con byte 16re1;
 SClshift	:con byte 16r2a;
@@ -87,11 +93,11 @@ Kin : adt {
 	name: string;
 	fd: ref Sys->FD;
 };
+kbdin : ref Kin;
 
 KDev : adt {
-	usb: Usb;
-	dev: ref Usb->Dev;	# usb device
-	ep: ref Usb->Dev;	# endpoint to get events
+	dev: ref Dev;	# usb device
+	ep: ref Dev;	# endpoint to get events
 	in: ref Kin;		# used to send events to kernel
 	idle: int;		# min time between reports (× 4ms)
 	repeatc: chan of int;	# only for keyboard
@@ -104,13 +110,13 @@ KDev : adt {
 setbootproto(f: ref KDev, eid: int): int {
 	nr, r, id: int;
 
-	r = Usb->Rh2d|Usb->Rclass|Usb->Riface;
-	f.usb->dprint("setting boot protocol\n");
+	r = Rh2d|Rclass|Riface;
+	dprint("setting boot protocol\n");
 	id = f.dev.usb.ep[eid].iface.id;
-	nr = f.usb->usbcmd(f.dev, r, Setproto, Bootproto, id, nil, 0);
+	nr = usbcmd(f.dev, r, Setproto, Bootproto, id, nil, 0);
 	if(nr < 0)
 		return -1;
-	f.usb->usbcmd(f.dev, r, Setidle, f.idle<<8, id, nil, 0);
+	usbcmd(f.dev, r, Setidle, f.idle<<8, id, nil, 0);
 	return nr;
 }
 
@@ -225,6 +231,63 @@ putkeys(f: ref KDev, buf,obuf: array of byte, n: int, dk: byte): byte {
 	return dk;
 }
 
+setfirstconfig(f: ref KDev, eid: int, desc: array of byte, descsz: int): int {
+	nr, r, id, i: int;
+	ignoredesc := array[128] of byte;
+
+	dprint("setting first config\n");
+	if(desc == nil){
+		descsz = len ignoredesc;
+		desc = ignoredesc;
+	}
+
+	id = f.dev.usb.ep[eid].iface.id;
+	r = Rh2d | Rstd | Rdev;
+	nr = usbcmd(f.dev, r, Rsetconf, 1, 0, nil, 0);
+	if(nr < 0) return -1;
+
+	r = Rh2d | Rclass | Riface;
+	nr = usbcmd(f.dev, r, Setidle, f.idle<<8, id, nil, 0);
+	if(nr < 0) return -1;
+
+	r = Rd2h | Rstd | Riface;
+	nr = usbcmd(f.dev,  r, Rgetdesc, Dreport<<8, id, desc, descsz);
+	if(nr <= 0) return -1;
+
+	if(f.debug){
+		fprint(fildes(2), "report descriptor:");
+		for(i = 0; i < nr; i++){
+			if(i%8 == 0)
+				fprint(fildes(2), "\n\t");
+			fprint(fildes(2), "%#2.2ux ", int desc[i]);
+		}
+		fprint(fildes(2), "\n");
+	}
+	#f.ptrvals = ptrrepvals;
+	return nr;
+}
+
+# Try to recover from a babble error. A port reset is the only way out.
+# BUG: we should be careful not to reset a bundle with several devices.
+recoverkb(f: ref KDev) {
+	f.dev.dfd = nil;	# it's for usbd now
+	devctl(f.dev, "reset");
+	for(i := 0; i < 10; i++){
+		if(i == 5)
+			f.bootp++;
+		sys->sleep(500);
+		if(opendevdata(f.dev, Sys->ORDWR) != nil){
+			if(f.bootp)
+				# TODO func pointer
+				setbootproto(f, f.ep.id);
+			else
+				setfirstconfig(f, f.ep.id, nil, 0);
+			break;
+		}
+		# else usbd still working...
+	}
+}
+
 kbfatal(kd: ref KDev, sts: string) {
 	if(sts != nil)
 		sys->fprint(sys->fildes(2), "kb: fatal: %s\n", sts);
@@ -235,10 +298,10 @@ kbfatal(kd: ref KDev, sts: string) {
 	dev := kd.dev;
 	kd.dev = nil;
 	if(kd.ep != nil)
-		kd.usb->closedev(kd.ep);
+		closedev(kd.ep);
 	kd.ep = nil;
-	kd.usb->devctl(dev, "detach");
-	kd.usb->closedev(dev);
+	devctl(dev, "detach");
+	closedev(dev);
 }
 
 kbdbusy(buf: array of byte, n: int): int {
@@ -261,16 +324,16 @@ kbdwork(f: ref KDev) {
 	kbdfd := f.ep.dfd;
 
 	if(f.ep.maxpkt < 3 || f.ep.maxpkt > 64)
-			kbfatal(f, "weird maxpkt");
+		kbfatal(f, "weird maxpkt");
 
 	f.repeatc = chan of int;
 	spawn repeatproc(f);
 
-	f.usb->memset(lbuf,0);
+	memset(lbuf,0);
 	dk = nerrs = 0;
 
 	while(1) {
-		f.usb->memset(buf,0);
+		memset(buf,0);
 		c := sys->read(kbdfd, buf, f.ep.maxpkt);
 		if(c < 0){
 			sys->fprint(sys->fildes(2), "kb: %s: read: %r\n", f.ep.dir);
@@ -278,7 +341,7 @@ kbdwork(f: ref KDev) {
 			sys->fprint(sys->fildes(2), "kb: %s: read: %s\n", f.ep.dir, err);
 			if(err =="babble" && ++nerrs < 3){
 				#TODO!
-				#recoverkb(f);
+				recoverkb(f);
 				continue;
 			}
 		}
@@ -288,7 +351,7 @@ kbdwork(f: ref KDev) {
 			continue;
 		if(kbdbusy(buf[2:], c-2))
 			continue;
-		if(f.usb->usbdebug > 2 || f.debug > 1){
+		if(usbdebug > 2 || f.debug > 1){
 			sys->fprint(sys->fildes(2), "kbd mod %x: ", int buf[0]);
 			for(i := 2; i < c; i++)
 				sys->fprint(sys->fildes(2), "kc %x ", int buf[i]);
@@ -300,7 +363,7 @@ kbdwork(f: ref KDev) {
 	}
 }
 
-kbstart(d: ref Usb->Dev, ep: ref Usb->Ep, in: ref Kin, nil: ref fn(f: ref KDev), kd: ref KDev) {
+kbstart(d: ref Dev, ep: ref Ep, in: ref Kin, nil: ref fn(f: ref KDev), kd: ref KDev) {
 	desc := array[512] of byte;
 	n, res :int;
 
@@ -315,41 +378,32 @@ kbstart(d: ref Usb->Dev, ep: ref Usb->Ep, in: ref Kin, nil: ref fn(f: ref KDev),
 	kd.in = in;
 	kd.dev = d;
 	res = -1;
-	kd.ep = kd.usb->openep(d, ep.id);
+	kd.ep = openep(d, ep.id);
 	if(kd.ep ==nil){
 		sys->fprint(sys->fildes(2), "kb: %s: openep %d: %r\n", d.dir, ep.id);
 		return;
 	}
-	#if(in == kbdin){
-		#
-		# DWC OTG controller misses some split transaction inputs.
-		# Set nonzero idle time to return more frequent reports
-		# of keyboard state, to avoid losing key up/down events.
-		#
-		n = sys->read(d.cfd, desc, len desc);
-		if(n > 0){
-			(nil,s1) := str->splitstrr(string desc[:n],"dwcotg");
-			if (s1 != string desc[:n])
-				kd.idle = Dwcidle;
-		}
-	#}
-	#if(!kd.bootp)
-	#	res= setfirstconfig(kd, ep->id, desc, sizeof desc);
-	#if(res > 0)
-	#	res = parsereportdesc(&kd->templ, desc, sizeof desc);
-	# if we could not set the first config, we give up
-	if(kd.bootp || res < 0){
-		kd.bootp = 1;
-		if(setbootproto(kd, ep.id) < 0){
-			sys->fprint(sys->fildes(2), "kb: %s: bootproto: %r\n", d.dir);
-			return;
-		}
+
+	#
+	# DWC OTG controller misses some split transaction inputs.
+	# Set nonzero idle time to return more frequent reports
+	# of keyboard state, to avoid losing key up/down events.
+	#
+	n = sys->read(d.cfd, desc, len desc);
+	if(n > 0){
+		(nil,s1) := str->splitstrr(string desc[:n],"dwcotg");
+		if (s1 != string desc[:n])
+			kd.idle = Dwcidle;
 	}
-	#else if(kd.debug)
-	#	dumpreport(&kd->templ);
-	if(kd.usb->opendevdata(kd.ep, sys->OREAD) ==nil){
+	kd.bootp = 1;
+	if(setbootproto(kd, ep.id) < 0){
+		sys->fprint(sys->fildes(2), "kb: %s: bootproto: %r\n", d.dir);
+		return;
+	}
+
+	if(opendevdata(kd.ep, sys->OREAD) ==nil){
 		sys->fprint(sys->fildes(2), "kb: %s: opendevdata: %r\n", kd.ep.dir);
-		kd.usb->closedev(kd.ep);
+		closedev(kd.ep);
 		kd.ep = nil;
 		return;
 	}
@@ -359,52 +413,34 @@ kbstart(d: ref Usb->Dev, ep: ref Usb->Ep, in: ref Kin, nil: ref fn(f: ref KDev),
 	reppid =<- kd.pidc;
 }
 
-init(usb:Usb, d: ref Usb->Dev): int {
+init(u: Usb, d: ref Dev): int {
+	usb = u;
 	workpid = reppid = -1;
 
 	sys = load Sys Sys->PATH;
 	str = load String String->PATH;
 
-	kbdin := ref Kin;
+	kbdin = ref Kin;
 	kbdin.name = "#Ι/kbin";
 
-	kena, pena: int;
-	kena = pena = 1;
-	bootp := 0;
 	debug := 0;
 
 	ud := d.usb;
-	ep: ref Usb->Ep;
+	ep: ref Ep;
 
-	if(kena)
-		for(i := 0; i < len ud.ep; ++i)
-			if((ep = ud.ep[i]) == nil)
-				break;
-			else if(ep.iface.csp == KbdCSP)
-				bootp = 1;
-
-
-	for(i = 0; i < len ud.ep; i++){
+	for(i := 0; i < len ud.ep; i++){
 		if((ep = ud.ep[i]) == nil)
 			continue;
-		if(kena && ep.typ == Usb->Eintr && ep.dir == Usb->Ein &&
-			ep.iface.csp == KbdCSP){
+		if(ep.typ == Eintr
+		   && ep.dir == Ein
+		   && ep.iface.csp == KbdCSP){
 			kd := ref KDev;
-			kd.usb = usb;
 			kd.accel = 0;
 			kd.bootp = 1;
 			kd.debug = debug;
 			kd.pidc = chan of int;
 			kbstart(d, ep, kbdin, kbdwork, kd);
 		}
-		#if(pena && ep.typ == Usb->Eintr && ep.dir == Usb->Ein &&
-		#    ep.iface.csp == PtrCSP){
-		#	kd = ref KDev;
-		#	kd.accel = accel;
-		#	kd.bootp = bootp;
-		#	kd.debug = debug;
-		#	kbstart(d, ep, ptrin, ptrwork, kd);
-		#}
 	}
 	return 0;
 }
@@ -419,8 +455,7 @@ kill(pid: int): int {
 }
 
 shutdown() {
-	if(workpid >= 0)
-		kill(workpid);
-	if(reppid >= 0)
-		kill(reppid);
+	if(workpid >= 0) kill(workpid);
+	if(reppid >= 0) kill(reppid);
+	kbdin.fd = nil;
 }
