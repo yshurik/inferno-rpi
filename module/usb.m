@@ -269,7 +269,7 @@ Usb: module
 
 	argv0: string;
 	usbdebug: int;
-	dprint: fn(n: int, s: string);
+	dprint: fn(s: string);
 
 	Class: fn(csp:int): int;
 	Subclass: fn(csp:int): int;
