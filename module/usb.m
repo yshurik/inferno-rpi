@@ -27,8 +27,6 @@ Usb: module
 	Rep	:con 2;		# endpoint
 	Rother	:con 3;
 
-	Maxdevconf :con 4 * 1024;
-
 	Fhublocalpower		:con 0;
 	Fhubovercurrent		:con 1;
 
@@ -270,6 +268,7 @@ Usb: module
 	argv0: string;
 	usbdebug: int;
 	dprint: fn(s: string);
+	ddprint: fn(s: string);
 
 	Class: fn(csp:int): int;
 	Subclass: fn(csp:int): int;
