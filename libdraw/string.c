@@ -54,6 +54,9 @@ runestringnop(Image *dst, Point pt, Image *src, Point sp, Font *f, Rune *r, int 
 	return _string(dst, pt, src, sp, f, nil, r, len, dst->clipr, nil, ZP, op);
 }
 
+void
+fix_5c_bug(char *) {;}
+
 Point
 _string(Image *dst, Point pt, Image *src, Point sp, Font *f, char *s, Rune *r, int len, Rectangle clipr, Image *bg, Point bgp, Drawop op)
 {
@@ -64,12 +67,15 @@ _string(Image *dst, Point pt, Image *src, Point sp, Font *f, char *s, Rune *r, i
 	char **sptr;
 	Rune **rptr;
 	Font *def;
+	char *wa1 ="", *wa2 ="", *wa3 ="";
 
+	fix_5c_bug(wa1);
 	if(s == nil){
 		s = "";
 		sptr = nil;
 	}else
 		sptr = &s;
+	fix_5c_bug(wa2);
 	if(r == nil){
 		r = (Rune*) L"";
 		rptr = nil;
@@ -132,5 +138,6 @@ _string(Image *dst, Point pt, Image *src, Point sp, Font *f, char *s, Rune *r, i
 			}
 		}
 	}
+	fix_5c_bug(wa3);
 	return pt;
 }
