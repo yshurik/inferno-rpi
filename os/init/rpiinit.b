@@ -8,7 +8,7 @@ include "sh.m";
 	sh: Sh;
 include "draw.m";
 	draw: Draw;
-	Context,Screen,Display: import draw;
+	Context: import draw;
 
 Shell: module { init: fn(ctxt: ref Context, argv: list of string); };
 Disk: module { init: fn(ctxt: ref Context, argv: list of string); };
@@ -46,7 +46,7 @@ init(nil: ref Context, nil: list of string)
 	sh->system(nil, "mount -c {disk/kfs -c -A -n main /dev/sdM0/plan9} /n/local/sd");
 	sh->system(nil, "disk/kfscmd allow");
 
-	bindsd();
+	#bindsd();
 
 	dobind("#p",  "/prog", sys->MREPL);
 	dobind("#i",  "/dev", sys->MREPL);	# draw device
@@ -59,12 +59,13 @@ init(nil: ref Context, nil: list of string)
 	dobind("#I",  "/net", sys->MAFTER);	# IP
 
 	usbd->init(nil,nil);
-	sh->system(nil, "ndb/cs");
-	sh->system(nil, "ndb/dns -r");
-
-	sh->system(nil, "dossrv -f /dev/sdM0/dos -m /boot");
+	#sh->system(nil, "ndb/cs");
+	#sh->system(nil, "ndb/dns -r");
+	#
+	#sh->system(nil, "dossrv -f /dev/sdM0/dos -m /boot");
 	sh->system(nil, "styxlisten -A tcp!*!564 export /");
 
+	#sh->system(nil, "wm/wm");
 	spawn shell->init(nil, nil);
 }
 

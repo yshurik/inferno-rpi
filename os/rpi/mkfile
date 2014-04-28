@@ -57,6 +57,7 @@ i$CONF: $OBJ $CONF.c $CONF.root.h $LIBNAMES
 	$LD -f -l -o $target -R4 -T$loadaddr $OBJ $CONF.$O $LIBFILES
 	cp irpi /tftproot/
 	dd if=irpi skip=1 of=kernel.bin bs=32
+	rm irpi
 	echo Complete
 
 <../port/portmkfile

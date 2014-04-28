@@ -49,7 +49,7 @@ static Memimage xgscreen =
 	{ 0, 0, Wid, Ht },	/* clipr */
 	Depth,			/* depth */
 	4,			/* nchan */
-	ARGB32,			/* chan */
+	ABGR32,			/* chan */
 	nil,			/* cmap */
 	&xgdata,		/* data */
 	0,			/* zero */
@@ -150,7 +150,7 @@ screeninit(void)
 		chan = BGR24;
 		break;
 	case 32:
-		chan = ARGB32;
+		chan = ABGR32;
 		break;
 	}
 	memsetchan(&xgscreen, chan);
@@ -210,6 +210,7 @@ screenwin(void)
 void
 flushmemscreen(Rectangle)
 {
+
 }
 
 uchar*
@@ -366,11 +367,11 @@ swcursordraw(void)
 
 	if(swvisible)
 		return;
-	//if(swenabled == 0)
-	//	return;
+	if(swenabled == 0)
+		return;
 	if(swback == nil || swimg1 == nil || swmask1 == nil)
 		return;
-	//dounlock = canqlock(&drawlock);
+	dounlock = candrawqlock();
 	swvispt = swpt;
 	swvisvers = swvers;
 	swrect = rectaddpt(Rect(0,0,16,16), swvispt);
@@ -378,8 +379,8 @@ swcursordraw(void)
 	memimagedraw(gscreen, swrect, swimg1, ZP, swmask1, ZP, SoverD);
 	flushmemscreen(swrect);
 	swvisible = 1;
-	//if(dounlock)
-	//	qunlock(&drawlock);
+	if(dounlock)
+		drawqunlock();
 }
 
 void
@@ -395,13 +396,13 @@ cursoron(int dolock)
 
 	if (dolock)
 		lock(&cursor);
-	//if (canqlock(&drawlock)) {
+	if (candrawqlock()) {
 		retry = 0;
 		swcursorhide();
 		swcursordraw();
-	//	qunlock(&drawlock);
-	//} else
-	//	retry = 1;
+		drawqunlock();
+	} else
+		retry = 1;
 	if (dolock)
 		unlock(&cursor);
 	return retry;
@@ -444,11 +445,11 @@ swcursorclock(void)
 	x = splhi();
 	if(swenabled)
 	if(!swvisible || !eqpt(swpt, swvispt) || swvers!=swvisvers)
-	//if(canqlock(&drawlock)){
+	if(candrawqlock()){
 		swcursorhide();
 		swcursordraw();
-	//	qunlock(&drawlock);
-	//}
+		drawqunlock();
+	}
 	splx(x);
 }
 
@@ -535,5 +536,34 @@ setcursor(Cursor* curs)
 	cursoroff(0);
 	swload(curs);
 	cursoron(0);
+}
+
+static void
+swcursoravoid(Rectangle r)
+{
+	if(swvisible && rectXrect(r, swrect))
+		swcursorhide();
+}
+
+int
+hwdraw(Memdrawparam *par)
+{
+	Memimage *dst, *src, *mask;
+
+	if((dst=par->dst) == nil || dst->data == nil)
+		return 0;
+	if((src=par->src) == nil || src->data == nil)
+		return 0;
+	if((mask=par->mask) == nil || mask->data == nil)
+		return 0;
+
+	if(dst->data->bdata == xgdata.bdata)
+		swcursoravoid(par->r);
+	if(src->data->bdata == xgdata.bdata)
+		swcursoravoid(par->sr);
+	if(mask->data->bdata == xgdata.bdata)
+		swcursoravoid(par->mr);
+
+	return 0;
 }
 

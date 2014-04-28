@@ -5,6 +5,8 @@
 #define KZERO		0			/*! kernel address space */
 #define BY2PG		(4*KiB)			/*! bytes per page */
 #define BI2BY		8			/*! bits per byte */
+#define BI2WD           32                      /* bits per word */
+#define BY2WD           4                       /* bytes per word */
 #define BY2V		8			/*! only used in xalloc.c */
 #define MACHADDR	(KZERO+0x2000)		/*! Mach structure */
 #define	L2		(KZERO+0x3000)		/* L2 ptes for vectors etc */
