@@ -88,6 +88,7 @@ main() {
 	conf.nmach = 1;
 	serwrite = &pl011_serputs;
 
+	quotefmtinstall();
 	confinit();
 	mmuinit1();
 	xinit();

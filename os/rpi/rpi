@@ -94,6 +94,7 @@ code
 	int redirectconsole = 1;
 	char debug_keys = 1;
 	int panicreset = 0;
+	char *tkfont = "/fonts/lucidasans/unicode.7.font";
 
 init
 	rpiinit
@@ -180,5 +181,3 @@ root
 	/icons	/
 	/module	/
 	/locale	/
-
-

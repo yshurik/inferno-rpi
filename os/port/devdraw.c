@@ -764,7 +764,7 @@ drawclientop(Client *cl)
 	cl->op = SoverD;
 	return op;
 }
-	
+
 int
 drawhasclients(void)
 {
@@ -1963,6 +1963,24 @@ drawlsetrefresh(ulong qidpath, int id, void *reffn, void *refx)
 	if(i->layer == nil)
 		return 0;
 	return memlsetrefresh(i, reffn, refx);
+}
+
+void
+drawqlock(void)
+{
+	qlock(&sdraw);
+}
+
+void
+drawqunlock(void)
+{
+	qunlock(&sdraw);
+}
+
+int
+candrawqlock(void)
+{
+	return canqlock(&sdraw);
 }
 
 Dev drawdevtab = {

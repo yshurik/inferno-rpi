@@ -69,4 +69,6 @@ int	fpiarm(Ureg*);
 char*	getconf(char*);
 char *	getethermac(void);
 
-
+void	drawqlock(void);
+void	drawqunlock(void);
+int	candrawqlock(void);
