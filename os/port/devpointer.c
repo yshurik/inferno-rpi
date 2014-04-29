@@ -168,10 +168,10 @@ pointeropen(Chan* c, int omode)
 		}
 		if(!canqlock(&mouse.q))
 			error(Einuse);
-		if(incref(&mouse.ref) != 1){
-			qunlock(&mouse.q);
-			error(Einuse);
-		}
+		//if(incref(&mouse.ref) != 1){
+		//	qunlock(&mouse.q);
+		//	error(Einuse);
+		//}
 		cursorenable();
 		qunlock(&mouse.q);
 		poperror();
@@ -241,6 +241,7 @@ pointerwrite(Chan* c, void* va, long n, vlong)
 			n = sizeof buf -1;
 		memmove(buf, va, n);
 		buf[n] = 0;
+
 		x = strtoul(buf+1, &a, 0);
 		if(*a == 0)
 			error(Eshort);
