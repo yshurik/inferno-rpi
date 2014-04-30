@@ -11,13 +11,13 @@ cachechars(Font *f, char **ss, Rune **rr, ushort *cp, int max, int *wp, char **s
 {
 	int i, th, sh, h, ld, w, rw, wid, nc;
 	char *sp;
-	Rune r, *rp, vr;
+	Rune r, *rp, vr, rn=0;
 	ulong a;
 	Cacheinfo *c, *tc, *ec;
 
 	if(ss){
 		sp = *ss;
-		rp = (Rune*) L"";
+		rp = &rn;//(Rune*) L"";
 	}else{
 		sp = "";
 		rp = *rr;
@@ -50,7 +50,7 @@ cachechars(Font *f, char **ss, Rune **rr, ushort *cp, int max, int *wp, char **s
 			c++;
 			h++;
 		}
-	
+
 		/*
 		 * Not found; toss out oldest entry
 		 */
@@ -87,7 +87,7 @@ cachechars(Font *f, char **ss, Rune **rr, ushort *cp, int max, int *wp, char **s
 			break;
 		}
 		c = &f->cache[h];	/* may have reallocated f->cache */
-	
+
 	    Found:
 		wid += c->width;
 		c->age = f->age;

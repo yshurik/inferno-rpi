@@ -65,7 +65,7 @@ _string(Image *dst, Point pt, Image *src, Point sp, Font *f, char *s, Rune *r, i
 	uchar *b;
 	char *subfontname;
 	char **sptr;
-	Rune **rptr;
+	Rune **rptr, rn =0;
 	Font *def;
 	char *wa1 ="", *wa2 ="", *wa3 ="";
 
@@ -77,7 +77,7 @@ _string(Image *dst, Point pt, Image *src, Point sp, Font *f, char *s, Rune *r, i
 		sptr = &s;
 	fix_5c_bug(wa2);
 	if(r == nil){
-		r = (Rune*) L"";
+		r = &rn;//(Rune*) L"";
 		rptr = nil;
 	}else
 		rptr = &r;
