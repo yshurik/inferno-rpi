@@ -17,7 +17,7 @@ cachechars(Font *f, char **ss, Rune **rr, ushort *cp, int max, int *wp, char **s
 
 	if(ss){
 		sp = *ss;
-		rp = &rn;//(Rune*) L"";
+		rp = (Rune*) L"";
 	}else{
 		sp = "";
 		rp = *rr;
