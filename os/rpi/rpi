@@ -114,6 +114,7 @@ root
 	/dis/disk
 	/osinit.dis
 	/dis/sh.dis
+	/dis/tiny/sh.dis
 	/dis/ls.dis
 	/dis/ps.dis
 	/dis/cat.dis

@@ -61,11 +61,11 @@ init(nil: ref Context, nil: list of string)
 	usbd->init(nil,nil);
 	sh->system(nil, "ndb/cs");
 	sh->system(nil, "ndb/dns -r");
-	#
+
 	sh->system(nil, "dossrv -f /dev/sdM0/dos -m /boot");
 	sh->system(nil, "styxlisten -A tcp!*!564 export /");
 
-	#sh->system(nil, "wm/wm");
-	spawn shell->init(nil, nil);
+	sh->system(nil, "wm/wm");
+	#spawn shell->init(nil, nil);
 }
 
