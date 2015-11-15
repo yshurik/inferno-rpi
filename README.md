@@ -1,9 +1,47 @@
-Inferno® is a distributed operating system, originally developed at Bell Labs, but now developed and maintained by Vita Nuova® as Free Software.  Applications written in Inferno's concurrent programming language, Limbo, are compiled to its portable virtual machine code (Dis), to run anywhere on a network in the portable environment that Inferno provides.  Unusually, that environment looks and acts like a complete operating system.
+This is compilation of Labs completed by LynxLine (http://lynxline.com/projects/labs-portintg-inferno-os-to-raspberry-pi/) into the source code repository.
 
-The use of a high-level language and virtual machine is sensible but mundane. The interesting thing is the system's representation of services and resources.  They are represented in a file-like name hiearchy.  Programs access them using only the file operations open, read/write, and close.  The 'files' may of course represent stored data, but may also be devices, network and protocol interfaces, dynamic data sources, and services.  The approach unifies and provides basic naming, structuring, and access control mechanisms for all system resources.  A single file-service protocol (the same as Plan 9's 9P) makes all those resources available for import or export throughout the network in a uniform way, independent of location. An application simply attaches the resources it needs to its own per-process name hierarchy ('name space').
+We started a small and exciting project just for fun as “Porting Inferno OS to Raspberry Pi”. Of course we would like to run it there as native, not hosted. It was always declared that this OS is very simple for porting to new platforms, so let’s just research this and reach new distilled experiences of system programming. Also this OS is very small, simple and easy to tweak for research purposes.
 
-The system can be used to build portable client and server applications. It makes it straightforward to build lean applications that share all manner of resources over a network, without the cruft of much of the 'Grid' software one sees.
+We decided to organize it as some set of small labs with very detailed steps of what is done to reach results and make everything easy to reproduce.
 
-Inferno can run 'native' on various ARM, PowerPC, SPARC and x86 platforms but also 'hosted', under an existing operating system (including FreeBSD, Irix, Linux, MacOS X, Plan 9, and Solaris), again on various processor types.
+Season 1: Road to boot…
 
-This Bitbucket project includes source for the basic applications, Inferno itself (hosted and native), all supporting software, including the native compiler suite, essential executables and supporting files.
+1.	Lab 1, Compiler
+2.	Lab 2, Hardware
+3.	Lab 3, R-Pi Booting process
+4.	Lab 4, Loading kernel
+5.	Lab 5, Hello World
+6.	Lab 6, Compile something
+7.	Lab 7, linking, planning next
+8.	Lab 8, memory model
+9.	Lab 9, coding assembler part
+10.	Lab 10, Bss, memory pools, malloc
+11.	Lab 11, _div, testing print
+12.	Lab 12, interrupts, part 1
+13.	Lab 13, interrupts, part 2
+14.	Lab 14, interrupts, part 3
+15.	Lab 15, Eve, Hello World from Limbo!
+
+Season 2: Close to hardware…
+
+16.	Lab 16, Adding clocks, timers, converging to 9pi codes
+17.	Lab 17, mmu init
+18.	Lab 18, we have a screen!
+19.	Lab 19, keyboard through serial, fixes to get Ls
+20.	Lab 20, devusb, usbdwc and firq, first step to usb
+21.	Lab 21, porting usbd, fixed in allocb, see usb in actions
+22.	Lab 22, Usb keyboard
+23.	Lab 23, hard disk or SD card
+24.	Lab 24, network, part 1
+25.	Lab 25, network, part 2
+26.	Lab 26, floating point
+
+
+Downloads:
+[http://tor.lynxline.com/inferno-raspberry-pi-beta1-fat.zip](Link URL)
+
+Special thanks:
+
+* Charles Forsyth
+* Richard Miller
+* Peter D. Finn
