@@ -7,20 +7,20 @@ We decided to organize it as some set of small labs with very detailed steps of 
 Season 1: Road to boot…
 
 1.	[Lab 1, Compiler](http://lynxline.com/lab-1-compiler/)
-2.	Lab 2, Hardware
-3.	Lab 3, R-Pi Booting process
-4.	Lab 4, Loading kernel
-5.	Lab 5, Hello World
-6.	Lab 6, Compile something
-7.	Lab 7, linking, planning next
-8.	Lab 8, memory model
-9.	Lab 9, coding assembler part
-10.	Lab 10, Bss, memory pools, malloc
-11.	Lab 11, _div, testing print
-12.	Lab 12, interrupts, part 1
-13.	Lab 13, interrupts, part 2
-14.	Lab 14, interrupts, part 3
-15.	Lab 15, Eve, Hello World from Limbo!
+2.	[Lab 2, Hardware](http://lynxline.com/lab-2-hardware/)
+3.	[Lab 3, R-Pi Booting process](http://lynxline.com/lab-3-r-pi-booting-process/)
+4.	[Lab 4, Loading kernel](http://lynxline.com/lab-4-loading-kernel/)
+5.	[Lab 5, Hello World](http://lynxline.com/lab-5-hello-world/)
+6.	[Lab 6, Compile something](http://lynxline.com/lab-6-compile-something/)
+7.	[Lab 7, linking, planning next](http://lynxline.com/lab-7-linking-more-initialization/)
+8.	[Lab 8, memory model](http://lynxline.com/lab-8-memory-model/)
+9.	[Lab 9, coding assembler part](http://lynxline.com/lab-9-coding-assembler-part/)
+10.	[Lab 10, Bss, memory pools, malloc](http://lynxline.com/lab-10-bss-menpools-malloc/)
+11.	[Lab 11, _div, testing print](http://lynxline.com/lab-11-_div-testing-print/)
+12.	[Lab 12, interrupts, part 1](http://lynxline.com/lab-12-interrupts-part-1/)
+13.	[Lab 13, interrupts, part 2](http://lynxline.com/lab-13-interrupts-part2/)
+14.	[Lab 14, interrupts, part 3](http://lynxline.com/lab-14-interrupts-part-3/)
+15.	[Lab 15, Eve, Hello World from Limbo!](http://lynxline.com/lab-15-eve-hello-world-from-limbo/)
 
 Season 2: Close to hardware…
 
