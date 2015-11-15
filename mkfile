@@ -23,7 +23,6 @@ EMUDIRS=\
 	libmemdraw\
 	libmemlayer\
 	libdynld\
-	asm\
 	utils/data2c\
 	utils/ndate\
 	emu\
@@ -39,7 +38,7 @@ KERNEL_DIRS=\
 
 DIRS=\
 	$EMUDIRS\
-	appl\
+#	appl\
 
 foo:QV:
 	echo mk all, clean, install, installall or nuke
@@ -146,9 +145,6 @@ kernel/&-Plan9:QV:
 
 # Convenience targets
 
-Hp-% hp-%:V:
-	mk 'SYSHOST=Hp' 'OBJTYPE=s800' $stem
-
 Inferno-% inferno-% Inferno-386-% inferno-386-%:V:
 	mk 'SYSHOST=Inferno' 'OBJTYPE=386' $stem
 
@@ -184,4 +180,4 @@ mkdirs-sh:V:
 	chmod 555 mnt/* n/client/* n/*
 
 mkdirs-nt:V:
-	mkdir -p `{cat lib/emptydirs}
+	mkdir -p `{cmd /c type lib\emptydirs}

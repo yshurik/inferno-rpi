@@ -34,7 +34,6 @@ TARG=\
 	basename.dis\
 	bind.dis\
 	# bit2gif.dis\
-	broke.dis\
 	bytes.dis\
 	cal.dis\
 	calc.dis\
@@ -68,7 +67,6 @@ TARG=\
 	fc.dis\
 	fcp.dis\
 	fmt.dis\
-	fone.dis\
 	fortune.dis\
 	freq.dis\
 	fs.dis\

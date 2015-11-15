@@ -5,10 +5,13 @@ include "sys.m";
 include "draw.m";
 include "bufio.m";
 	bufio : Bufio;
+include "dial.m";
+	dial: Dial;
 include "pop3.m";
 
-FD, Connection: import sys;
+FD: import sys;
 Iobuf : import bufio;
+Connection: import dial;
 
 ibuf, obuf : ref Bufio->Iobuf;
 conn : int = 0;
@@ -26,14 +29,17 @@ open(user, password, server : string): (int, string)
 	if (!inited) {
 		sys = load Sys Sys->PATH;
 		bufio = load Bufio Bufio->PATH;
+		dial = load Dial Dial->PATH;
 		inited = 1;
 	}
 	if (conn)
 		return (-1, "connection is already open");
 	if (server == nil)
 		server = "$pop3";
-	(ok, c) := sys->dial ("net!" + server + "!110", nil);
-	if (ok < 0)
+	else
+		server = dial->netmkaddr(server, "net", "110");
+	c := dial->dial(server, nil);
+	if (c == nil)
 		return (-1, "dialup failed");
 	ibuf = bufio->fopen(c.dfd, Bufio->OREAD);
 	obuf = bufio->fopen(c.dfd, Bufio->OWRITE);
@@ -42,6 +48,7 @@ open(user, password, server : string): (int, string)
 	cread = chan of (int, string);
 	spawn mreader(cread);
 	(rpid, nil) = <- cread;
+	ok: int;
  	(ok, s) = mread();
 	if (ok < 0)
 		return (-1, s);
