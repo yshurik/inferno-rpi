@@ -71,7 +71,7 @@ sched(void)
 				else if(explain)
 					Bprint(&bout, "no touch of virtual '%s'\n", n->name);
 			}
-			n->time = time((long *)0);
+			n->time = time(0);
 			MADESET(n, MADE);
 		}
 	} else {
@@ -280,7 +280,7 @@ usage(void)
 {
 	long t;
 
-	time(&t);
+	t = time(0);
 	if(tick)
 		tslot[nrunning] += (t-tick);
 	tick = t;

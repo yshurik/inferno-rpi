@@ -13,6 +13,10 @@
 #include <direct.h>
 
 #define	getwd	infgetwd
+#define	strtod	infstrtod
+#define	strtoll	infstrtoll
+#define	strtoull	infstrtoull
+#undef environ
 
 /* do-it-yourself isinf and isnan */
 #ifndef isnan
@@ -93,6 +97,7 @@ extern	int	cistrncmp(char*, char*, int);
 extern	int	cistrcmp(char*, char*);
 extern	char*	cistrstr(char*, char*);
 extern	int	tokenize(char*, char**, int);
+extern	double	strtod(const char*, char**);
 extern	vlong	strtoll(const char*, char**, int);
 #define	qsort	infqsort
 extern	void	qsort(void*, long, long, int (*)(void*, void*));
@@ -455,6 +460,7 @@ extern	int	errstr(char*, uint);
 extern	long	readn(int, void*, long);
 extern	void	rerrstr(char*, uint);
 extern	vlong	seek(int, vlong, int);
+extern	int	segflush(void*, ulong);
 extern	void	werrstr(char*, ...);
 
 extern char *argv0;
@@ -484,4 +490,3 @@ extern char *argv0;
 
 extern	void	setbinmode(void);
 extern	void*	sbrk(int);
-

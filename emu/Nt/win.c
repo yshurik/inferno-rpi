@@ -32,10 +32,10 @@
 #include	<draw.h>
 #include	"keyboard.h"
 #include	"cursor.h"
+#include	"r16.h"
 
 extern ulong displaychan;
 
-extern	char*	runestoutf(char*, Rune*, int);
 extern	int	bytesperline(Rectangle, int);
 extern	int	main(int argc, char **argv);
 static	void	dprint(char*, ...);
@@ -698,15 +698,15 @@ drawcursor(Drawcursor* c)
 static char*
 clipreadunicode(HANDLE h)
 {
-	Rune *p;
+	Rune16 *p;
 	int n;
 	char *q;
 	
 	p = GlobalLock(h);
-	n = runenlen(p, runestrlen(p)+1);
+	n = rune16nlen(p, runes16len(p)+1);
 	q = malloc(n);
 	if(q != nil)
-		runestoutf(q, p, n);
+		runes16toutf(q, p, n);
 	GlobalUnlock(h);
 
 	if(q == nil)
@@ -752,8 +752,8 @@ int
 clipwrite(char *buf)
 {
 	HANDLE h;
-	char *p, *e;
-	Rune *rp;
+	char *p;
+	Rune16 *rp;
 	int n;
 
 	n = 0;
@@ -767,15 +767,11 @@ clipwrite(char *buf)
 		return -1;
 	}
 
-	h = GlobalAlloc(GMEM_MOVEABLE|GMEM_DDESHARE, (n+1)*sizeof(Rune));
+	h = GlobalAlloc(GMEM_MOVEABLE|GMEM_DDESHARE, (n+1)*sizeof(Rune16));
 	if(h == NULL)
 		error(Enovmem);
 	rp = GlobalLock(h);
-	p = buf;
-	e = p+n;
-	while(p<e)
-		p += chartorune(rp++, p);
-	*rp = 0;
+	utftorunes16(rp, buf, n+1);
 	GlobalUnlock(h);
 
 	SetClipboardData(CF_UNICODETEXT, h);
