@@ -452,6 +452,8 @@ ptrwork(f: ref KDev) {
 		ch.b = 0;
 		ch.e = 8 * c;
 		(r,x,y,b) = ptrrepvals(f,ch);
+		if(f.debug > 1)
+			fprint(fildes(2), "ptrrepvals: m%11d %11d %11d\n", x, y, b);
 		if(r < 0)
 			continue;
 		if(f.accel){
@@ -463,6 +465,10 @@ ptrwork(f: ref KDev) {
 
 		curx += x;
 		cury += y;
+		if (curx<0) curx =0;
+		if (cury<0) cury =0;
+		if (curx>1280) curx =1280;
+		if (cury>1024) cury =1024;
 
 		if(f.debug > 1)
 			fprint(fildes(2), "kb: m%11d %11d %11d\n", curx, cury, b);
