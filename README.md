@@ -24,17 +24,17 @@ Season 1: Road to boot…
 
 Season 2: Close to hardware…
 
-16.	Lab 16, Adding clocks, timers, converging to 9pi codes
-17.	Lab 17, mmu init
-18.	Lab 18, we have a screen!
-19.	Lab 19, keyboard through serial, fixes to get Ls
-20.	Lab 20, devusb, usbdwc and firq, first step to usb
-21.	Lab 21, porting usbd, fixed in allocb, see usb in actions
-22.	Lab 22, Usb keyboard
-23.	Lab 23, hard disk or SD card
-24.	Lab 24, network, part 1
-25.	Lab 25, network, part 2
-26.	Lab 26, floating point
+16.	[Lab 16, Adding clocks, timers, converging to 9pi codes](http://lynxline.com/lab-16/)
+17.	[Lab 17, mmu init](http://lynxline.com/lab-17-mmu-init/)
+18.	[Lab 18, we have a screen!](http://lynxline.com/lab-18-we-have-a-screen/)
+19.	[Lab 19, keyboard through serial, fixes to get Ls](http://lynxline.com/lab-19-keyboard-through-serial-fixes-to-get-ls/)
+20.	[Lab 20, devusb, usbdwc and firq, first step to usb](http://lynxline.com/lab-20-devusb-usbdwc-and-firq-first-step-to-usb/)
+21.	[Lab 21, porting usbd, fixed in allocb, see usb in actions](http://lynxline.com/lab-21-porting-usbd-fixed-in-allocb-see-usb-in-actions/)
+22.	[Lab 22, Usb keyboard](http://lynxline.com/lab-22-usb-keyboard/)
+23.	[Lab 23, hard disk or SD card](http://lynxline.com/lab-23-hard-disk-or-sd-card/)
+24.	[Lab 24, network, part 1](http://lynxline.com/lab-24-network-part-1/)
+25.	[Lab 25, network, part 2](http://lynxline.com/lab-25-network-part-2/)
+26.	[Lab 26, floating point](http://lynxline.com/lab-26-floating-point/)
 
 
 Downloads:
