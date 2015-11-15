@@ -273,8 +273,9 @@ getramsize(Conf *mem)
 
 	if(vcreq(TagGetram, buf, 0, sizeof buf) != sizeof buf)
 		return;
-	//mem->base = buf[0];
-	//mem->limit = buf[1];
+
+	print("getramsize %d, %d\n", buf[0], buf[1]);
+	mem->topofmem = buf[1];
 }
 
 /*

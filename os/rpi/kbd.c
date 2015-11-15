@@ -229,6 +229,7 @@ kbdputsc(int c, int external)
 	if(kbscan->caps && c<='z' && c>='a')
 		c += 'A' - 'a';
 
+	//print("key %08x\n", c);
 	/*
 	 *  keyup only important for shifts
 	 */

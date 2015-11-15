@@ -41,10 +41,13 @@ init(nil: ref Context, nil: list of string)
 	sys = load Sys Sys->PATH;
 	sh = load Sh Sh->PATH;
 
+	# just use dos-based sd card
 	dobind("#S",  "/dev", sys->MAFTER);	# sdcard subsystem
 	sh->system(nil, "disk/fdisk -p /dev/sdM0/data > /dev/sdM0/ctl");
-	sh->system(nil, "mount -c {disk/kfs -c -A -n main /dev/sdM0/plan9} /n/local/sd");
-	sh->system(nil, "disk/kfscmd allow");
+	sh->system(nil, "dossrv -f /dev/sdM0/dos -m /n/local/sd");
+	
+	#sh->system(nil, "mount -c {disk/kfs -c -A -n main /dev/sdM0/plan9} /n/local/sd");
+	#sh->system(nil, "disk/kfscmd allow");
 
 	bindsd();
 
@@ -58,14 +61,15 @@ init(nil: ref Context, nil: list of string)
 	dobind("#l0", "/net", Sys->MREPL);
 	dobind("#I",  "/net", sys->MAFTER);	# IP
 
-	usbd->init(nil,nil);
+	spawn usbd->init(nil,nil);
 	sh->system(nil, "ndb/cs");
 	sh->system(nil, "ndb/dns -r");
 
-	sh->system(nil, "dossrv -f /dev/sdM0/dos -m /boot");
 	sh->system(nil, "styxlisten -A tcp!*!564 export /");
 
 	sh->system(nil, "wm/wm");
+	
+	#uncomment if need a shell instead wm
 	#spawn shell->init(nil, nil);
 }
 

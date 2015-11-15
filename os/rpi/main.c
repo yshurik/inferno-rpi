@@ -24,7 +24,9 @@ void
 confinit(void)
 {
 	ulong base;
+	getramsize(&conf);
 	conf.topofmem = 128*MB;
+	getramsize(&conf);
 
 	base = PGROUND((ulong)end);
 	conf.base0 = base;
@@ -60,6 +62,7 @@ getfirmware(void);
 
 void
 main() {
+	uint j=0,i=0,k=0;
 	uint rev;
 	ulong pc;
 	pc = getpc();
@@ -103,9 +106,22 @@ main() {
 	swcursorinit();
 
 	rev = getfirmware();
-	print("\nARM %ld MHz id %8.8lux firmware: rev %d\n", (m->cpuhz+500000)/1000000, getcpuid(), rev);
+	print("\nARM %ld MHz id %8.8lux firmware: rev %d, mem: %d\n"
+		,(m->cpuhz+500000)/1000000, getcpuid(), rev, conf.topofmem/MB);
 	print("Inferno OS %s Vita Nuova\n", VERSION);
 	print("Ported to Raspberry Pi (BCM2835) by LynxLine\n\n");
+	
+	/*
+	print("Testing:\n");
+	for(i=0;i<10;i++) {
+		for(j=0;j<100000000;j++)
+			k += j*i;
+
+		print(".");
+	}
+	print("\n");
+	print("Done 10x 10e6 ops\n");
+	*/
 
 	procinit();
 	links();
