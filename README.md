@@ -38,7 +38,17 @@ Season 2: Close to hardware…
 
 
 Downloads:
+
 * [http://tor.lynxline.com/inferno-raspberry-pi-beta1-fat.zip](http://tor.lynxline.com/inferno-raspberry-pi-beta1-fat.zip)
+
+Installation:
+
+1.	Download zip package: http://tor.lynxline.com/inferno-raspberry-pi-beta1-fat.zip
+2.	Pepare SD card with just one DOS partition (just format into the dos)
+3.	Unzip all files to SD (boot.scr, kernel.bin, ... should in root of SD)
+4.	Boot Raspberry Pi
+5.	By default it starts ```styxlisten -A tcp!*!564 export /```, so you can mount it on other host by ```mount -A tcp!10.0.56.101!564 /n/remote/rpi``` (-A means no auth, IP is for example, see what it got by DHCP)
+
 
 Special thanks:
 
