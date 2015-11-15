@@ -6,7 +6,7 @@ We decided to organize it as some set of small labs with very detailed steps of 
 
 Season 1: Road to boot…
 
-1.	Lab 1, Compiler
+1.	[Lab 1, Compiler](http://lynxline.com/lab-1-compiler/)
 2.	Lab 2, Hardware
 3.	Lab 3, R-Pi Booting process
 4.	Lab 4, Loading kernel
@@ -38,7 +38,7 @@ Season 2: Close to hardware…
 
 
 Downloads:
-[http://tor.lynxline.com/inferno-raspberry-pi-beta1-fat.zip](Link URL)
+* [http://tor.lynxline.com/inferno-raspberry-pi-beta1-fat.zip](http://tor.lynxline.com/inferno-raspberry-pi-beta1-fat.zip)
 
 Special thanks:
 
