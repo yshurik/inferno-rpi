@@ -205,7 +205,6 @@ userinit(void)
 void	segflush(void*, ulong) { return; }
 
 void	exit(int) { return; }
-void	reboot(void) { return; }
 void	halt(void) { spllo(); for(;;); }
 
 void	fpinit(void) {}
