@@ -169,6 +169,20 @@ TEXT mmuinvalidate(SB), 1, $-4
  *   invalidate tlb entry for virtual page address va, ASID 0
  */
 TEXT mmuinvalidateaddr(SB), 1, $-4
-   	MCR	CpSC, 0, R0, C(CpTLB), C(CpTLBinvu), CpTLBinvse
+	MCR	CpSC, 0, R0, C(CpTLB), C(CpTLBinvu), CpTLBinvse
 	BARRIERS
 	RET
+
+TEXT idlehands(SB), $-4
+	BARRIERS
+	MOVW	CPSR, R3
+	BIC	$(PsrDirq|PsrDfiq), R3, R1		/* spllo */
+	MOVW	R1, CPSR
+
+	MOVW	$0, R0				/* wait for interrupt */
+	MCR	CpSC, 0, R0, C(CpCACHE), C(CpCACHEintr), CpCACHEwait
+	ISB
+
+	MOVW	R3, CPSR			/* splx */
+	RET
+

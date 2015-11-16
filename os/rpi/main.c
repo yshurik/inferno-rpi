@@ -110,7 +110,7 @@ main() {
 		,(m->cpuhz+500000)/1000000, getcpuid(), rev, conf.topofmem/MB);
 	print("Inferno OS %s Vita Nuova\n", VERSION);
 	print("Ported to Raspberry Pi (BCM2835) by LynxLine\n\n");
-	
+
 	/*
 	print("Testing:\n");
 	for(i=0;i<10;i++) {
@@ -203,7 +203,6 @@ userinit(void)
 }
 
 void	segflush(void*, ulong) { return; }
-void	idlehands(void) { return; }
 
 void	exit(int) { return; }
 void	reboot(void) { return; }

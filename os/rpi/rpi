@@ -117,6 +117,7 @@ root
 	/dis/tiny/sh.dis
 	/dis/ls.dis
 	/dis/ps.dis
+	/dis/ns.dis
 	/dis/cat.dis
 	/dis/bind.dis
 	/dis/mount.dis

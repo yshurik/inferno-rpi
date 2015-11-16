@@ -45,7 +45,7 @@ init(nil: ref Context, nil: list of string)
 	dobind("#S",  "/dev", sys->MAFTER);	# sdcard subsystem
 	sh->system(nil, "disk/fdisk -p /dev/sdM0/data > /dev/sdM0/ctl");
 	sh->system(nil, "dossrv -f /dev/sdM0/dos -m /n/local/sd");
-	
+
 	#sh->system(nil, "mount -c {disk/kfs -c -A -n main /dev/sdM0/plan9} /n/local/sd");
 	#sh->system(nil, "disk/kfscmd allow");
 
@@ -68,7 +68,7 @@ init(nil: ref Context, nil: list of string)
 	sh->system(nil, "styxlisten -A tcp!*!564 export /");
 
 	sh->system(nil, "wm/wm");
-	
+
 	#uncomment if need a shell instead wm
 	#spawn shell->init(nil, nil);
 }
