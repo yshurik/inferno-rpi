@@ -57,6 +57,7 @@ port
 	allocb
 	chan
 	dev
+	devcons
 	dial
 	dis
 	discall
@@ -124,9 +125,11 @@ root
 	/dis/listen.dis
 	/dis/export.dis
 	/dis/unmount.dis
+	/dis/sleep.dis
 	/dis/pwd.dis
 	/dis/echo.dis
 	/dis/cd.dis
+	/dis/netstat.dis
 	/dis/styxlisten.dis
 	/dis/lib/arg.dis
 	/dis/lib/auth.dis
