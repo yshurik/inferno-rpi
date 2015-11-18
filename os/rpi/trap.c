@@ -178,7 +178,13 @@ faultarm(Ureg *ureg)
 	sprint(buf, "sys: trap: fault pc=%8.8lux", (ulong)ureg->pc);
 	if(0){
 		iprint("%s\n", buf);
+
+		print("%s\n", buf);
+		print("Around PC?: %8.8uX\n", ureg->pc);
+		dumparound(ureg->pc);
+
 		dumpregs(ureg);
+		for(;;);
 	}
 	disfault(ureg, buf);
 }

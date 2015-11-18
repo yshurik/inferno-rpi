@@ -111,18 +111,6 @@ main() {
 	print("Inferno OS %s Vita Nuova\n", VERSION);
 	print("Ported to Raspberry Pi (BCM2835) by LynxLine\n\n");
 
-	/*
-	print("Testing:\n");
-	for(i=0;i<10;i++) {
-		for(j=0;j<100000000;j++)
-			k += j*i;
-
-		print(".");
-	}
-	print("\n");
-	print("Done 10x 10e6 ops\n");
-	*/
-
 	procinit();
 	links();
 	chandevreset();
@@ -202,7 +190,11 @@ userinit(void)
 	ready(p);
 }
 
-void	segflush(void*, ulong) { return; }
+void
+segflush(void* p, ulong n) {
+	cachedwbinvse(p,n);
+	cacheiinvse(p,n);
+}
 
 void	exit(int) { return; }
 void	halt(void) { spllo(); for(;;); }

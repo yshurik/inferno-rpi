@@ -55,6 +55,7 @@ default:V: i$CONF
 i$CONF: $OBJ $CONF.c $CONF.root.h $LIBNAMES
 	$CC $CFLAGS -DKERNDATE=$KERNDATE $CONF.c
 	$LD -l -o $target -R4 -T$loadaddr $OBJ $CONF.$O $LIBFILES
+	#$LD -a -l -o $target -R4 -T$loadaddr $OBJ $CONF.$O $LIBFILES > a.asm
 	cp irpi /tftproot/
 	dd if=irpi skip=1 of=kernel.bin bs=32
 	rm irpi
