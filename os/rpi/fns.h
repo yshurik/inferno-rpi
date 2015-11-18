@@ -52,6 +52,7 @@ void	irqenable(int, void (*)(Ureg*, void*), void*);
 void	cachedwbinv(void);
 void	cachedwbse(void*, int);
 void	cachedwbinvse(void*, int);
+void	cacheiinvse(void*, int);
 void	cacheiinv(void);
 void	cacheuwbinv(void);
 
