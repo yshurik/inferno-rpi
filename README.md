@@ -43,7 +43,7 @@ Downloads:
 
 Installation:
 
-1.	Download zip package: http://tor.lynxline.com/inferno-raspberry-pi-beta1-fat.zip
+1.	Download latest zip package from [Downloads](https://bitbucket.org/infpi/inferno-rpi/downloads)
 2.	Pepare SD card with just one DOS partition (just format into the dos)
 3.	Unzip all files to SD (boot.scr, kernel.bin, ... should in root of SD)
 4.	Boot Raspberry Pi
