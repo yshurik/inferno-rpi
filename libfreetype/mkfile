@@ -4,10 +4,16 @@ LIB=libfreetype.a
 
 OFILES=\
 	freetype.$O\
-	autohint.$O\
+	autofit.$O\
 	ftbase.$O\
+	ftbzip2.$O\
+	ftcache.$O\
 	ftglyph.$O\
 	cff.$O\
+	gxvalid.$O\
+	ftgzip.$O\
+	ftlzw.$O\
+	otvalid.$O\
 	psaux.$O\
 	psnames.$O\
 	raster.$O\
@@ -16,7 +22,7 @@ OFILES=\
 	truetype.$O\
 	type1.$O\
 	type42.$O\
-	ftsystem_inf.$O\
+	ftsystem.$O\
 	ftinit.$O\
 	pshinter.$O\
 	pfr.$O\
@@ -27,23 +33,30 @@ OFILES=\
 
 <$ROOT/mkfiles/mksyslib-$SHELLTYPE
 
-CFLAGS= $ANSICPP $CFLAGS -I$ROOT/include/freetype -I.
+CFLAGS= $ANSICPP $CFLAGS -DFT2_BUILD_LIBRARY -I$ROOT/include/freetype -I.
 
 freetype.$O:	$ROOT/include/freetype.h
 
 # FreeType is organised by #include of .c files
 # here are the necessary depenencies
 
-autohint.$O:	ahangles.c ahglyph.c ahglobal.c ahhint.c ahmodule.c
-ftbase.$O:	ftutil.c ftdbgmem.c ftstream.c ftcalc.c fttrigon.c ftoutln.c ftgloadr.c ftobjs.c ftnames.c
-cff.$O:	cffdrivr.c cffparse.c cffload.c cffobjs.c cffgload.c cffcmap.c
-psaux.$O:	psobjs.c psauxmod.c t1decode.c t1cmap.c
-psnames.$O:	psmodule.c
-raster.$O:	ftraster.c ftrend1.c
-sfnt.$O:	ttload.c ttcmap.c ttcmap0.c sfobjs.c sfdriver.c
-smooth.$O:	ftgrays.c ftsmooth.c
-truetype.$O:	ttdriver.c ttpload.c ttgload.c ttobjs.c
-type1.$O:	t1parse.c t1load.c t1objs.c t1driver.c t1gload.c
+autohint.$O:	afpic.c afangles.c afglobal.c afhints.c afdummy.c aflatin.c aflatin2.c afcjk.c afindic.c afloader.c afmodule.c afwarp.c
+ftbase.$O:	ftpic.c basepic.c ftadvanc.c ftcalc.c ftdbgmem.c ftgloadr.c ftobjs.c ftoutln.c ftrfork.c ftsnames.c ftstream.c fttrigon.c ftutil.c ftmac.c
+ftcache.$O:	ftcmru.c ftcmanag.c ftccache.c ftccmap.c ftcglyph.c ftcimage.c ftcsbits.c ftcbasic.c
+ftglyph.$O:	basepic.h
+cff.$O:	cffpic.c cffdrivr.c cffparse.c cffload.c cffobjs.c cffgload.c cffcmap.c
+gxvalid.$O:	gxvfeat.c gxvcommn.c gxvbsln.c gxvtrak.c gxvjust.c gxvmort.c gxvmort0.c gxvmort1.c gxvmort2.c gxvmort4.c gxvmort5.c gxvmorx.c gxvmorx0.c gxvmorx1.c gxvmorx2.c gxvmorx4.c gxvmorx5.c gxvkern.c gxvopbd.c gxvprop.c gxvlcar.c gxvmod.c
+ftgzip.$O:	zutil.h inftrees.h infblock.h infcodes.h infutil.h zutil.c inftrees.c infutil.c infcodes.c infblock.c inflate.c adler32.c
+ftlzw.$O:	ftzopen.h
+otvalid.$O:	otvbase.c otvcommn.c otvgdef.c otvgpos.c otvgsub.c otvjstf.c otvmath.c otvmod.c
+psaux.$O:	psobjs.c psauxmod.c t1decode.c t1cmap.c afmparse.c psconv.c
+psnames.$O:	pspic.c psmodule.c
+raster.$O:	rastpic.c ftraster.c ftrend1.c
+sfnt.$O:	sfntpic.c ttload.c ttmtx.c ttcmap.c ttkern.c sfobjs.c sfdriver.c ttsbit.c ttpost.c ttbdf.c
+smooth.$O:	ftspic.c ftgrays.c ftsmooth.c
+truetype.$O:	ttpic.c ttdriver.c ttpload.c ttgload.c ttobjs.c ttinterp.c ttgxvar.c
+type1.$O:	t1parse.c t1load.c t1objs.c t1driver.c t1gload.c t1afm.c
 type42.$O:	t42objs.c t42parse.c t42drivr.c
-pshinter.$O:	pshrec.c pshglob.c pshalgo1.c pshalgo2.c pshalgo3.c pshmod.c
+ftinit.$O:	basepic.h
+pshinter.$O:	pshpic.c pshrec.c pshglob.c pshalgo.c pshmod.c
 pfr.$O:	pfrload.c pfrgload.c pfrcmap.c pfrobjs.c pfrdrivr.c pfrsbit.c
