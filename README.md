@@ -44,7 +44,7 @@ Downloads:
 Installation:
 
 1.	Download latest zip package from [Downloads](https://bitbucket.org/infpi/inferno-rpi/downloads)
-2.	Pepare SD card with just one DOS partition (just format into the dos)
+2.	Pepare SD card with first DOS partition for boot (about 100MB, there is a problem with ```dossrv``` and large partitions)
 3.	Unzip all files to SD (boot.scr, kernel.bin, ... should in root of SD)
 4.	Boot Raspberry Pi
 5.	By default it starts ```styxlisten -A tcp!*!564 export /```, so you can mount it on other host by ```mount -A tcp!10.0.56.101!564 /n/remote/rpi``` (-A means no auth, IP is for example, see what it got by DHCP)
