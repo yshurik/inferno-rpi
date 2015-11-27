@@ -39,7 +39,7 @@ Season 2: Close to hardware…
 
 Downloads:
 
-* [http://tor.lynxline.com/inferno-raspberry-pi-beta1-fat.zip](http://tor.lynxline.com/inferno-raspberry-pi-beta1-fat.zip)
+* [https://bitbucket.org/infpi/inferno-rpi/downloads](https://bitbucket.org/infpi/inferno-rpi/downloads)
 
 Installation:
 
