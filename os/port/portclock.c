@@ -5,6 +5,11 @@
 #include "fns.h"
 #include "io.h"
 #include "ureg.h"
+#include "../port/error.h"
+
+enum {
+	Maxtimerloops = 20*1000,
+};
 
 struct Timers
 {
@@ -13,6 +18,7 @@ struct Timers
 };
 
 static Timers timers[MAXMACH];
+static int timersinited;
 
 ulong intrcount[MAXMACH];
 ulong fcallcount[MAXMACH];
@@ -29,7 +35,8 @@ tadd(Timers *tt, Timer *nt)
 		panic("timer");
 		break;
 	case Trelative:
-		assert(nt->tns > 0);
+		if(nt->tns <= 0)
+			nt->tns = 1;
 		nt->twhen = fastticks(nil) + ns2fastticks(nt->tns);
 		break;
 	case Tabsolute:
@@ -173,15 +180,17 @@ timerintr(Ureg *u, uvlong)
 	Timer *t;
 	Timers *tt;
 	uvlong when, now;
-	int callhzclock;
-	static int sofar;
+	int count,callhzclock;
 
 	intrcount[m->machno]++;
 	callhzclock = 0;
 	tt = &timers[m->machno];
 	now = fastticks(nil);
+	if(now == 0)
+		panic("timerintr: zero fastticks()");
 	ilock(tt);
-	while(t = tt->head){
+	count = Maxtimerloops;
+	while((t = tt->head) != nil){
 		/*
 		 * No need to ilock t here: any manipulation of t
 		 * requires tdel(t) and this must be done with a
@@ -208,6 +217,12 @@ timerintr(Ureg *u, uvlong)
 		ilock(tt);
 		if(t->tmode == Tperiodic)
 			tadd(tt, t);
+		if (--count <= 0) {
+			count = Maxtimerloops;
+			iprint("timerintr: probably stuck in while loop; "
+				"scrutinise clock.c or use faster cycle "
+				"counter\n");
+		}
 	}
 	iunlock(tt);
 }
@@ -217,8 +232,14 @@ timersinit(void)
 {
 	Timer *t;
 
+	/*
+	 * T->tf == nil means the HZ clock for this processor.
+	 */
+	timersinited = 1;
 	todinit();
 	t = malloc(sizeof(*t));
+	if(t == nil)
+		error(Enomem);
 	t->tmode = Tperiodic;
 	t->tt = nil;
 	t->tns = 1000000000/HZ;
@@ -232,8 +253,12 @@ addclock0link(void (*f)(void), int ms)
 	Timer *nt;
 	uvlong when;
 
+	if(!timersinited)
+		panic("addclock0link: timersinit not called yet");
 	/* Synchronize to hztimer if ms is 0 */
 	nt = malloc(sizeof(Timer));
+	if(nt == nil)
+		error(Enomem);
 	if(ms == 0)
 		ms = 1000/HZ;
 	nt->tns = (vlong)ms*1000000LL;
