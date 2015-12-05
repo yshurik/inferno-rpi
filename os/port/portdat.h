@@ -508,6 +508,7 @@ struct Proc
 	void*		dbgreg;		/* User registers for devproc */
  	int		dbgstop;		/* don't run this kproc */
 	Edf*	edf;	/* if non-null, real-time proc, edf contains scheduling params */
+	u32int		ticks;
 };
 
 enum

@@ -188,7 +188,7 @@ TEXT mmuinvalidateaddr(SB), 1, $-4
 	BARRIERS
 	RET
 
-TEXT idlehands(SB), $-4
+TEXT _idlehands(SB), $-4
 	BARRIERS
 	MOVW	CPSR, R3
 	BIC	$(PsrDirq|PsrDfiq), R3, R1		/* spllo */
