@@ -500,7 +500,9 @@ procdump(void)
 	char *s;
 	Proc *p;
 	char tmp[14];
+	int tenths, sec, msec;
 
+	//print("idleticks:%d\n", m->idleticks);
 	for(i=0; i<conf.nproc; i++) {
 		p = &procalloc.arena[i];
 		if(p->state == Dead)
@@ -513,8 +515,16 @@ procdump(void)
 			snprint(tmp, sizeof(tmp), " /%.8lux", p->r);
 		else
 			*tmp = '\0';
-		print("%lux:%3lud:%14s pc %.8lux %s/%s qpc %.8lux pri %d%s\n",
-			p, p->pid, p->text, p->pc, s, statename[p->state], p->qpc, p->pri, tmp);
+		
+		msec = TK2MS(p->ticks);
+        	tenths = msec;
+	        sec = msec/1000;
+		
+		print("%lux:%3lud:%14s t %4d:%2.2d.%03d pc %.8lux %s/%s qpc %.8lux pri %d%s\n",
+			p, p->pid, p->text,
+			sec/60, sec%60, tenths%1000,
+			p->pc, s, statename[p->state], p->qpc, p->pri, tmp);
+
 	}
 }
 

@@ -96,6 +96,10 @@ accountant(void)
 	p = isched.runhd;
 	if(p != nil)
 		p->ticks++;
+	if (m->inidle)
+		m->idleticks++;
+	if (m->proc)
+		m->proc->ticks++;
 }
 
 static void
@@ -1014,6 +1018,7 @@ vmachine(void*)
 	Prog *r;
 	Osenv *o;
 	int cycles;
+	static ulong lastgcmsec =0;
 
 	startup();
 
@@ -1032,8 +1037,16 @@ vmachine(void*)
 	cycles = 0;
 	for(;;) {
 		if(tready(nil) == 0) {
-			execatidle();
+			ulong now = TK2MS(MACHP(0)->ticks);
+			if ((now - lastgcmsec) >500 /* || lowmem() */) {
+				strcpy(up->text, "gc");
+				execatidle();
+				lastgcmsec = TK2MS(MACHP(0)->ticks);
+			}
+			strcpy(up->text, "idle");
 			sleep(&isched.irend, tready, 0);
+			strcpy(up->text, "dis");
+			
 		}
 
 		if(isched.vmq != nil && (isched.runhd == nil || ++cycles > 2)){
@@ -1051,23 +1064,30 @@ vmachine(void*)
 			FPsave(&o->fpu);
 
 			if(isched.runhd != nil)
-			if(r == isched.runhd)
-			if(isched.runhd != isched.runtl) {
-				isched.runhd = r->link;
-				r->link = nil;
-				isched.runtl->link = r;
-				isched.runtl = r;
-			}
+				if(r == isched.runhd)
+					if(isched.runhd != isched.runtl) {
+						isched.runhd = r->link;
+						r->link = nil;
+						isched.runtl->link = r;
+						isched.runtl = r;
+					}
 			up->env = &up->defenv;
-			if(isched.runhd != nil)
-			if (up->iprog == nil) {
-				up->type = BusyGC;
-				pushrun(up->prog);
-				rungc(isched.head);
-				up->type = Interp;
-				delrunq(up->prog);
-			} else
-				print("up->iprog not nil (%lux)\n", up->iprog);
+			if(isched.runhd != nil) {
+				ulong now = TK2MS(MACHP(0)->ticks);
+				if ((now - lastgcmsec) >500 /* || lowmem() */) {
+					if (up->iprog == nil) {
+						strcpy(up->text, "gc");
+						up->type = BusyGC;
+						pushrun(up->prog);
+						rungc(isched.head);
+						up->type = Interp;
+						delrunq(up->prog);
+						strcpy(up->text, "dis");
+						lastgcmsec = TK2MS(MACHP(0)->ticks);
+					} else
+						print("up->iprog not nil (%lux)\n", up->iprog);
+				}
+			}
 		}
 	}
 }

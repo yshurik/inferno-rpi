@@ -106,7 +106,7 @@ main() {
 	swcursorinit();
 
 	rev = getfirmware();
-	print("\nARM %ld MHz id %8.8lux firmware: rev %d, mem: %d\n"
+	print("\nARM %ld MHz id %8.8lux firmware: rev %d, mem: %ld\n"
 		,(m->cpuhz+500000)/1000000, getcpuid(), rev, conf.topofmem/MB);
 	print("Inferno OS %s Vita Nuova\n", VERSION);
 	print("Ported to Raspberry Pi (BCM2835) by LynxLine\n\n");
@@ -194,6 +194,12 @@ void
 segflush(void* p, ulong n) {
 	cachedwbinvse(p,n);
 	cacheiinvse(p,n);
+}
+
+void    
+idlehands(void) {
+	m->inidle = 1;
+	_idlehands();
 }
 
 void	exit(int) { return; }

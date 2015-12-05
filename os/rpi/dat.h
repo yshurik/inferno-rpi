@@ -91,6 +91,8 @@ struct Mach
 	int	intr;
 	uvlong	fastclock;	/* last sampled value */
 	ulong	cpuhz;
+	u32int	inidle;
+	u32int	idleticks;
 	MMMU;
 
 	/* stacks for exceptions */

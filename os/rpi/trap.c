@@ -99,6 +99,7 @@ fiq(Ureg *ureg)
 	if(v == nil)
 		panic("unexpected item in bagging area");
 	m->intr++;
+	m->inidle = 0;
 	ureg->pc -= 4;
 	coherence();
 	v->f(ureg, v->a);
@@ -227,6 +228,7 @@ trap(Ureg *ureg)
 		t = m->ticks;		/* CPU time per proc */
 		up = nil;		/* no process at interrupt level */
 		irq(ureg);
+		m->inidle = 0;
 		up = m->proc;
 		preemption(m->ticks - t);
 		m->intr++;
@@ -297,6 +299,8 @@ faultpanic:
 		panic("exception %uX %s\n", ureg->type, trapname(ureg->type));
 		break;
 	}
+
+	m->inidle = 0;
 
 	splhi();
 	if(up)

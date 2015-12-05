@@ -33,6 +33,7 @@ int	splfhi(void);
 int	tas(void *);
 
 void	idlehands(void);
+void	_idlehands(void);
 void	coherence(void);
 void	clockinit(void);
 void	trapinit(void);
@@ -74,3 +75,5 @@ void	getramsize(Conf *);
 void	drawqlock(void);
 void	drawqunlock(void);
 int	candrawqlock(void);
+void	swcursorinit(void);
+
