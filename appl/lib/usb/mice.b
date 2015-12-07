@@ -574,7 +574,7 @@ init(u: Usb, d: ref Dev): int {
 	str = load String String->PATH;
 
 	ptrin := ref Kin;
-	ptrin.name = "#m/pointer";
+	ptrin.name = "#m/pointerin";
 
 	bootp := 0;
 	debug := 0;
