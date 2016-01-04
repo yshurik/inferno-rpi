@@ -27,7 +27,7 @@
 
 #define	PHYSDRAM	0
 #define BUSDRAM		0x40000000
-#define	DRAMSIZE	(256*MiB)
+#define	DRAMSIZE	(512*MiB)
 
 #define	PHYSIO		0x20000000
 #define VIRTIO		0x20000000
