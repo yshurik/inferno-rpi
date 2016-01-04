@@ -117,6 +117,8 @@ root
 	/dis/sh.dis
 	/dis/tiny/sh.dis
 	/dis/ls.dis
+	/dis/mc.dis
+	/dis/lc
 	/dis/ps.dis
 	/dis/ns.dis
 	/dis/cat.dis
@@ -131,10 +133,12 @@ root
 	/dis/cd.dis
 	/dis/netstat.dis
 	/dis/styxlisten.dis
+	/dis/time.dis
 	/dis/lib/arg.dis
 	/dis/lib/auth.dis
 	/dis/lib/lock.dis
 	/dis/lib/rand.dis
+	/dis/lib/random.dis
 	/dis/lib/dial.dis
 	/dis/lib/bufio.dis
 	/dis/lib/timers.dis
@@ -143,6 +147,7 @@ root
 	/dis/lib/readdir.dis
 	/dis/lib/workdir.dis
 	/dis/lib/daytime.dis
+	/dis/math/sieve.dis
 # usb support
 	/lib/usbdb
 	/dis/usb/usbd.dis
@@ -155,11 +160,22 @@ root
 	/dis/ip/dhcp.dis
 	/dis/lib/ip.dis
 	/dis/lib/dhcpclient.dis
+	/dis/ndb/cs.dis
+	/dis/ndb/dns.dis
+	/dis/lib/attrdb.dis
+	/dis/lib/ipattr.dis
+	/lib/ndb/common
+	/lib/ndb/dns
+	/lib/ndb/inferno
+	/lib/ndb/local
+	/lib/ndb/registry
+	/lib/ndb/services
 # disk support
 	/usr	/
 	/usr/inferno	/
 	/dis/dd.dis
 	/dis/fs.dis
+	/dis/dossrv.dis
 	/dis/lib/fslib.dis
 	/dis/lib/fsproto.dis
 	/dis/lib/fsfilter.dis
