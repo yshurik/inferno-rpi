@@ -110,8 +110,6 @@ root
 	/net	/
 	/prog	/
 	/n	/
-	/n/local	/
-	/n/local/sd	/
 	/dis/lib
 	/dis/disk
 	/osinit.dis
@@ -125,6 +123,7 @@ root
 	/dis/cat.dis
 	/dis/bind.dis
 	/dis/mount.dis
+	/dis/mntgen.dis
 	/dis/listen.dis
 	/dis/export.dis
 	/dis/unmount.dis
@@ -148,7 +147,8 @@ root
 	/dis/lib/readdir.dis
 	/dis/lib/workdir.dis
 	/dis/lib/daytime.dis
-	/dis/math/sieve.dis
+	/dis/lib/nametree.dis
+	/dis/lib/styxservers.dis
 # usb support
 	/lib/usbdb
 	/dis/usb/usbd.dis
@@ -195,6 +195,8 @@ root
 	/dis/disk/prep.dis
 	/dis/lib/disks.dis
 	/dis/lib/styx.dis
+# misc
+	/dis/math/sieve.dis
 # structure
 	/boot	/
 	/man	/

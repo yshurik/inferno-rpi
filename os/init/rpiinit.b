@@ -43,6 +43,9 @@ init(nil: ref Context, nil: list of string)
 
 	# just use dos-based sd card
 	dobind("#S",  "/dev", sys->MAFTER);	# sdcard subsystem
+	sh->system(nil, "mount -c {mntgen} /n");
+	sh->system(nil, "mount -c {mntgen} /n/local");
+	sh->system(nil, "mount -c {mntgen} /n/remote");
 	sh->system(nil, "disk/fdisk -p /dev/sdM0/data > /dev/sdM0/ctl");
 	sh->system(nil, "dossrv -f /dev/sdM0/dos -m /n/local/sd");
 
@@ -67,9 +70,9 @@ init(nil: ref Context, nil: list of string)
 
 	sh->system(nil, "styxlisten -A tcp!*!564 export /");
 
-	sh->system(nil, "wm/wm");
+	#sh->system(nil, "wm/wm");
 
 	#uncomment if need a shell instead wm
-	#spawn shell->init(nil, nil);
+	spawn shell->init(nil, nil);
 }
 
