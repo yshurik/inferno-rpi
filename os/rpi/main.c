@@ -88,7 +88,6 @@ main() {
 	pl011_addr((char *)&end,	1);
 
 	conf.nmach = 1;
-	//serwrite = &pl011_serputs;
 
 	quotefmtinstall();
 	confinit();
@@ -102,7 +101,6 @@ main() {
 	timersinit();
 	clockinit();
 	printinit();
-	//pl011init();
 	swcursorinit();
 
 	rev = getfirmware();
@@ -196,7 +194,7 @@ segflush(void* p, ulong n) {
 	cacheiinvse(p,n);
 }
 
-void    
+void
 idlehands(void) {
 	m->inidle = 1;
 	_idlehands();

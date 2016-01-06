@@ -111,6 +111,7 @@ root
 	/net	/
 	/prog	/
 	/n	/
+	/tmp	/
 	/dis/lib
 	/dis/disk
 	/osinit.dis
