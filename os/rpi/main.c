@@ -18,7 +18,6 @@ extern int heap_pool_pcnt;
 extern int image_pool_pcnt;
 
 char* getconf(char*) { return nil; }
-void okay(int /*on*/) {}
 
 void
 confinit(void)
@@ -89,7 +88,7 @@ main() {
 	pl011_addr((char *)&end,	1);
 
 	conf.nmach = 1;
-	serwrite = &pl011_serputs;
+	//serwrite = &pl011_serputs;
 
 	quotefmtinstall();
 	confinit();
@@ -97,12 +96,13 @@ main() {
 	xinit();
 	poolinit();
 	poolsizeinit();
+	uartconsinit();
 	screeninit();
 	trapinit();
 	timersinit();
 	clockinit();
 	printinit();
-	pl011init();
+	//pl011init();
 	swcursorinit();
 
 	rev = getfirmware();

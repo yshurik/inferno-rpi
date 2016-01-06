@@ -84,6 +84,7 @@ port
 misc
 	sdmmc	emmc
 	dma
+	uartmini
 
 code
 	int kernel_pool_pcnt = 10;

@@ -14,12 +14,9 @@ void    (*screenputs)(char*, int);
 
 #include "../port/portfns.h"
 
-int	pl011_getc(void);
 void	pl011_putc(int);
 void	pl011_puts(char *);
-void	pl011_serputs(char *, int);
 void	pl011_addr(void *a, int nl);
-void	pl011init(void);
 
 ulong	getsp(void);
 ulong   getsc(void);
