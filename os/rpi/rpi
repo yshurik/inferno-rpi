@@ -17,6 +17,7 @@ dev
 	ether netif netaux
 
 link
+	archbcm
 	usbdwc
 	etherusb
 	ethermedium

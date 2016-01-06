@@ -1,7 +1,7 @@
 
 #define IOBASE			0x20000000		/* base of io regs */
 #define INTREGS			(IOBASE+0x00B200)
-#define POWERREGS		(IOBASE+0x100000)
+//#define POWERREGS		(IOBASE+0x100000)
 #define PL011REGS		(IOBASE+0x201000)
 
 #define UART_PL01x_FR_RXFE  0x10

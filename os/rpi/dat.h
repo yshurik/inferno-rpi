@@ -18,6 +18,7 @@ typedef struct FPU FPU;
 typedef ulong  Instr;
 typedef struct Conf Conf;
 typedef u32int PTE;
+typedef struct Soc      Soc;
 
 struct Lock
 {
@@ -90,6 +91,7 @@ struct Mach
 	Label   sched;		/* scheduler wakeup */
 	int	intr;
 	uvlong	fastclock;	/* last sampled value */
+	int     cpumhz;
 	ulong	cpuhz;
 	u32int	inidle;
 	u32int	idleticks;
@@ -145,4 +147,15 @@ struct DevConf
 	int	nports;			/* Number of ports */
 	Devport	*ports;			/* The ports themselves */
 };
+
+struct Soc {                    /* SoC dependent configuration */
+        ulong   dramsize;
+        uintptr physio;
+        uintptr busdram;
+        uintptr busio;
+        uintptr armlocal;
+        u32int  l1ptedramattrs;
+        u32int  l2ptedramattrs;
+};
+extern Soc soc;
 

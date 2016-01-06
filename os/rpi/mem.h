@@ -3,6 +3,7 @@
 #define GiB		1073741824u	/*! Gibi 000000000040000000 */
 
 #define KZERO		0			/*! kernel address space */
+#define KSEGM           0
 #define BY2PG		(4*KiB)			/*! bytes per page */
 #define BI2BY		8			/*! bits per byte */
 #define BI2WD           32                      /* bits per word */
