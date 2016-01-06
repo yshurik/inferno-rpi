@@ -98,6 +98,13 @@ struct Cb {
 static Ctlr dma[Nchan];
 static u32int *dmaregs = (u32int*)DMAREGS;
 
+uintptr
+dmaaddr(void *va)
+{
+        //return soc.busdram | (PTR2UINT(va) & ~KSEGM);
+	return DMAADDR(va);
+}
+
 static void
 dump(char *msg, uchar *p, int n)
 {

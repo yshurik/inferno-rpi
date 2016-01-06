@@ -32,8 +32,12 @@ u32int	lcycles(void);
 int	splfhi(void);
 int	tas(void *);
 
+void	delay(int);
+int	islo(void);
+void	microdelay(int);
 void	idlehands(void);
 void	_idlehands(void);
+
 void	coherence(void);
 void	clockinit(void);
 void	trapinit(void);
@@ -53,6 +57,7 @@ void	irqenable(int, void (*)(Ureg*, void*), void*);
 void	cachedwbinv(void);
 void	cachedwbse(void*, int);
 void	cachedwbinvse(void*, int);
+void	cachedinvse(void*, int);
 void	cacheiinvse(void*, int);
 void	cacheiinv(void);
 void	cacheuwbinv(void);
@@ -76,4 +81,13 @@ void	drawqlock(void);
 void	drawqunlock(void);
 int	candrawqlock(void);
 void	swcursorinit(void);
+
+int	isaconfig(char *, int, ISAConf *);
+
+uintptr dmaaddr(void *va);
+void 	dmastart(int, int, int, void*, void*, int);
+int 	dmawait(int);
+
+#define PTR2UINT(p)     ((uintptr)(p))
+#define UINT2PTR(i)     ((void*)(i))
 
