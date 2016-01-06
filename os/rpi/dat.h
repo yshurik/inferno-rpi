@@ -12,6 +12,7 @@ typedef struct Lock Lock;
 typedef struct Ureg Ureg;
 typedef struct Label Label;
 typedef struct FPenv FPenv;
+typedef struct PhysUart PhysUart;
 typedef struct Mach Mach;
 typedef struct MMMU	MMMU;
 typedef struct FPU FPU;
