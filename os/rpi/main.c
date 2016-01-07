@@ -49,11 +49,17 @@ confinit(void)
 static void
 poolsizeinit(void)
 {
-	ulong nb;
+	u64int nb;
+	ulong mpb,hpb,ipb;
+
 	nb = conf.npage*BY2PG;
-	poolsize(mainmem, (nb*main_pool_pcnt)/100, 0);
-	poolsize(heapmem, (nb*heap_pool_pcnt)/100, 0);
-	poolsize(imagmem, (nb*image_pool_pcnt)/100, 1);
+	mpb = (nb*main_pool_pcnt)/100;
+	hpb = (nb*heap_pool_pcnt)/100;
+	ipb = (nb*image_pool_pcnt)/100;
+
+	poolsize(mainmem, mpb, 0);
+	poolsize(heapmem, hpb, 0);
+	poolsize(imagmem, ipb, 0);
 }
 
 uint
@@ -64,6 +70,7 @@ main() {
 	uint j=0,i=0,k=0;
 	uint rev;
 	ulong pc;
+
 	pc = getpc();
 	pl011_addr((void *)pc, 1);
 	pl011_puts("Entered main() at ");
