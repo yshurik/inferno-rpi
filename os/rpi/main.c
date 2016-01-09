@@ -137,7 +137,7 @@ init0(void)
 
 	up->nerrlab = 0;
 
-	print("Starting init0()\n");
+	//print("Starting init0()\n");
 	spllo();
 
 	if(waserror())
