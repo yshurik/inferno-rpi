@@ -32,6 +32,7 @@ bindsd() {
 	sys->bind("/n/local/sd/icons", "/icons", sys->MREPL);
 	sys->bind("/n/local/sd/module", "/module", sys->MREPL);
 	sys->bind("/n/local/sd/locale", "/locale", sys->MREPL);
+	sys->bind("/n/local/sd/services", "/services", sys->MREPL);
 	sys->bind("/n/local/sd/tmp", "/tmp", sys->MREPL|sys->MCREATE);
 }
 
@@ -71,9 +72,9 @@ init(nil: ref Context, nil: list of string)
 
 	sh->system(nil, "styxlisten -A tcp!*!564 export /");
 
-	#sh->system(nil, "wm/wm");
+	sh->system(nil, "wm/wm");
 
 	#uncomment if need a shell instead wm
-	spawn shell->init(nil, nil);
+	#spawn shell->init(nil, nil);
 }
 
