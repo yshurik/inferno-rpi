@@ -55,9 +55,10 @@ startdev(pp: ref Port): int {
 		ud.vendor = searchdbkey(ud,"vname");
 		ud.product = searchdbkey(ud,"pname");
 	}
-	sys->fprint(stderr,"usb:%02x:%02x:%02x/%04x:%04x:%s:%s %s\n"
-		,ud.class, ud.subclass,ud.proto, ud.vid, ud.did, d.dir
-		,ud.vendor,ud.product);
+
+	#sys->fprint(stderr,"usb:%02x:%02x:%02x/%04x:%04x:%s:%s %s\n"
+	#	,ud.class, ud.subclass,ud.proto, ud.vid, ud.did, d.dir
+	#	,ud.vendor,ud.product);
 
 	if(ud.class == Clhub){
 		#
