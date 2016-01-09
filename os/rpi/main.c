@@ -102,7 +102,7 @@ main() {
 	xinit();
 	poolinit();
 	poolsizeinit();
-	uartconsinit();
+	//uartconsinit();
 	screeninit();
 	trapinit();
 	timersinit();

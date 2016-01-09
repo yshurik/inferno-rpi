@@ -1046,7 +1046,7 @@ vmachine(void*)
 			strcpy(up->text, "idle");
 			sleep(&isched.irend, tready, 0);
 			strcpy(up->text, "dis");
-			
+
 		}
 
 		if(isched.vmq != nil && (isched.runhd == nil || ++cycles > 2)){
@@ -1103,7 +1103,7 @@ disinit(void *a)
 	if(waserror())
 		panic("disinit error: %r");
 
-	print("Initial Dis: \"%s\"\n", initmod);
+	//print("Initial Dis: \"%s\"\n", initmod);
 
 	fmtinstall('D', Dconv);
 
