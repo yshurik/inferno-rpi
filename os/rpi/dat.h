@@ -12,6 +12,7 @@ typedef struct Lock Lock;
 typedef struct Ureg Ureg;
 typedef struct Label Label;
 typedef struct FPenv FPenv;
+typedef struct I2Cdev I2Cdev;
 typedef struct PhysUart PhysUart;
 typedef struct Mach Mach;
 typedef struct MMMU	MMMU;
@@ -71,6 +72,12 @@ struct Conf
 	ulong   ialloc;     /* max interrupt time allocation in bytes */
 	ulong   topofmem;   /* top addr of memory */
 	int     monitor;    /* flag */
+};
+
+struct I2Cdev {
+	int	salen;
+	int	addr;
+	int	tenbit;
 };
 
 /*
