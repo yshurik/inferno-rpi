@@ -30,6 +30,7 @@ enum {
 	IRQdma0		= 16,
 #define IRQDMA(chan)	(IRQdma0+(chan))
 	IRQaux		= 29,
+	IRQi2c		= 53,
 	IRQmmc		= 62,
 	IRQbasic	= 64,
 	IRQtimerArm	= IRQbasic + 0,

@@ -15,6 +15,7 @@ dev
 	sd
 	ip  ip ipv6 ipaux iproute arp netlog ptclbsum iprouter plan9 nullmedium pktmedium netaux
 	ether netif netaux
+	i2c i2c
 
 link
 	archbcm
