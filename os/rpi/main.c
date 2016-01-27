@@ -213,3 +213,5 @@ void	halt(void) { spllo(); for(;;); }
 void	fpinit(void) {}
 void	FPsave(void*) {}
 void	FPrestore(void*) {}
+void	clockcheck(void) { return; }
+

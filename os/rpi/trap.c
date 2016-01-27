@@ -8,6 +8,8 @@
 #include "armv6.h"
 #include "../port/error.h"
 
+#define INTREGS		(VIRTIO+0xB200)
+
 static char *trapnames[PsrMask+1] = {
 	[ PsrMusr ] "user mode",
 	[ PsrMfiq ] "fiq interrupt",
@@ -41,6 +43,19 @@ typedef struct Vpage0 {
 
 typedef struct Intregs Intregs;
 typedef struct Vctl Vctl;
+
+/*
+ * interrupt control registers
+ */
+struct Intregs {
+        u32int  ARMpending;
+        u32int  GPUpending[2];
+        u32int  FIQctl;
+        u32int  GPUenable[2];
+        u32int  ARMenable;
+        u32int  GPUdisable[2];
+        u32int  ARMdisable;
+};
 
 struct Vctl {
 	Vctl	*next;

@@ -3,6 +3,7 @@
 #define PADDR(p)	((ulong)p)
 #define DMAADDR(va)	(BUSDRAM |((uintptr)(va)))
 #define DMAIO(va)	(BUSIO | ((uintptr)(va)))
+#define MASK(v)   ((1UL << (v)) - 1)      /* mask `v' bits wide */
 #define waserror()	(up->nerrlab++, setlabel(&up->errlab[up->nerrlab-1]))
 #define procsave(p)	/* Save the mach part of the current */
 			/* process state, no need for one cpu */

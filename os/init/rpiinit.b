@@ -61,6 +61,9 @@ init(nil: ref Context, nil: list of string)
 	dobind("#m",  "/dev", sys->MAFTER);	# mouse device
 	dobind("#c",  "/dev", sys->MAFTER);	# console device
 	dobind("#u",  "/dev", sys->MAFTER);	# usb subsystem
+	#dobind("#J",  "/dev", sys->MAFTER);	# i2c subsystem
+	dobind("#π",  "/dev", sys->MAFTER);	# spi subsystem
+	dobind("#G",  "/dev", sys->MAFTER);	# gpio subsystem
 	dobind("#e",  "/env", sys->MREPL|sys->MCREATE);
 	dobind("#S",  "/dev", sys->MAFTER);	# sdcard subsystem
 	dobind("#l0", "/net", Sys->MREPL);
@@ -72,9 +75,9 @@ init(nil: ref Context, nil: list of string)
 
 	sh->system(nil, "styxlisten -A tcp!*!564 export /");
 
-	sh->system(nil, "wm/wm");
+	#sh->system(nil, "wm/wm");
 
 	#uncomment if need a shell instead wm
-	#spawn shell->init(nil, nil);
+	spawn shell->init(nil, nil);
 }
 

@@ -36,6 +36,11 @@ struct Label
 	ulong   pc;
 };
 
+enum {
+        Maxfpregs       = 32,   /* could be 16 or 32, see Mach.fpnregs */
+	Nfpctlregs      = 16,
+};
+
 enum
 {
 	FPINIT,
@@ -81,6 +86,20 @@ struct I2Cdev {
 };
 
 /*
+ * GPIO
+ */
+enum {
+	Input	= 0x0,
+	Output	= 0x1,
+	Alt0	= 0x4,
+	Alt1	= 0x5,
+	Alt2	= 0x6,
+	Alt3	= 0x7,
+	Alt4	= 0x3,
+	Alt5	= 0x2,
+};
+
+/*
  *  MMU stuff in Mach.
  */
 struct MMMU
@@ -101,9 +120,21 @@ struct Mach
 	uvlong	fastclock;	/* last sampled value */
 	int     cpumhz;
 	ulong	cpuhz;
+	uvlong	cyclefreq;	/* Frequency of user readable cycle counter */
 	u32int	inidle;
 	u32int	idleticks;
 	MMMU;
+
+	/* vfp2 or vfp3 fpu */
+	int     havefp;
+	int     havefpvalid;
+	int     fpon;
+	int     fpconfiged;
+	int     fpnregs;
+	ulong   fpscr;                  /* sw copy */
+	int     fppid;                  /* pid of last fault */
+	uintptr fppc;                   /* addr of last fault */
+	int     fpcnt;                  /* how many consecutive at that addr */
 
 	/* stacks for exceptions */
 	ulong   fiqstack[5];
